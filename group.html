@@ -70,6 +70,25 @@
     padding-bottom: 40px;
   }
 
+  /* LOADING */
+  .page-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   /* PROFILE */
   .profile {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.15));
@@ -731,51 +750,58 @@
 </head>
 <body>
 
-  <div class="container">
+  <div class="container" id="appContainer">
 
-    <!-- PROFILE -->
-    <div class="profile">
-      <div class="avatar" id="avatar">?</div>
-      <div class="profile-info">
-        <div class="label">Pelajar</div>
-        <div class="name" id="profileName">Loading...</div>
-        <div class="matrix" id="profileMatrix">-</div>
-        <div class="status-badge" id="profileStatus">Belum join group</div>
-      </div>
-      <button class="logout-btn" id="logoutBtn" title="Tukar pelajar">⎋</button>
+    <div class="page-loading" id="pageLoading">
+      <div class="spinner"></div>
+      <span>Sambung ke Firestore...</span>
     </div>
 
-    <!-- STATS -->
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div class="stat-value" id="totalStudents">0</div>
-        <div class="stat-label">Total Pelajar</div>
+    <div id="mainContent" style="display:none;">
+      <!-- PROFILE -->
+      <div class="profile">
+        <div class="avatar" id="avatar">?</div>
+        <div class="profile-info">
+          <div class="label">Pelajar</div>
+          <div class="name" id="profileName">Loading...</div>
+          <div class="matrix" id="profileMatrix">-</div>
+          <div class="status-badge" id="profileStatus">Belum join group</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn" title="Tukar pelajar">⎋</button>
       </div>
-      <div class="stat-card joined">
-        <div class="stat-icon">✅</div>
-        <div class="stat-value" id="joinedCount">0</div>
-        <div class="stat-label">Dah Join</div>
-      </div>
-      <div class="stat-card not-joined">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-value" id="notJoinedCount">0</div>
-        <div class="stat-label">Belum Join</div>
-      </div>
-    </div>
 
-    <!-- GROUP SECTION -->
-    <div class="section">
-      <div class="section-header">
-        <h2>
-          Senarai Group
-          <span class="badge" id="groupCountBadge">0/8</span>
-        </h2>
-        <button class="create-btn" id="createGroupBtn">
-          ➕ Cipta Group
-        </button>
+      <!-- STATS -->
+      <div class="stats" style="margin-top: 20px;">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="totalStudents">0</div>
+          <div class="stat-label">Total Pelajar</div>
+        </div>
+        <div class="stat-card joined">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="joinedCount">0</div>
+          <div class="stat-label">Dah Join</div>
+        </div>
+        <div class="stat-card not-joined">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="notJoinedCount">0</div>
+          <div class="stat-label">Belum Join</div>
+        </div>
       </div>
-      <div class="group-list" id="groupList"></div>
+
+      <!-- GROUP SECTION -->
+      <div class="section" style="margin-top: 20px;">
+        <div class="section-header">
+          <h2>
+            Senarai Group
+            <span class="badge" id="groupCountBadge">0/8</span>
+          </h2>
+          <button class="create-btn" id="createGroupBtn">
+            ➕ Cipta Group
+          </button>
+        </div>
+        <div class="group-list" id="groupList"></div>
+      </div>
     </div>
 
   </div>
@@ -848,16 +874,43 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+  // ===== Firebase SDK =====
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    serverTimestamp,
+    runTransaction
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwQY0qtOX4pzwIV3_csamxx1h6iGLSf5M",
+    authDomain: "osteambuilder.firebaseapp.com",
+    projectId: "osteambuilder",
+    storageBucket: "osteambuilder.firebasestorage.app",
+    messagingSenderId: "325636555428",
+    appId: "1:325636555428:web:e4ba419da7a8fcc8fb1c31",
+    measurementId: "G-THSWWQEZ9T"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
   // ===== KONFIG =====
   const MAX_GROUPS_TOTAL = 8;
-  const MIN_GROUP_SIZE = 2;
-  const MAX_GROUP_SIZE = 8;
 
-  // ===== SENARAI PELAJAR (WAJIB SAMA dengan index.html) =====
+  // ===== DATA PELAJAR (WAJIB SAMA dengan index.html) =====
   const ALL_STUDENTS = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
@@ -866,7 +919,7 @@
     { matrix: "18DIT26F1017", name: "TEOH QIAN HOOI" },
     { matrix: "18DIT26F1024", name: "NURATHIRAH BADRIAH BINTI MOHD REDHUAN" },
     { matrix: "18DIT26F1035", name: "KAIYISAH ADNIN BINTI ZUNNASRI" },
-    { matrix: "18DIT26F1047", name: "NURUL HIDAYAH SYAZWANI BINTI MOHD SAYUTI" },
+    { matrix: "18DIT26F1047", name: "NURUL HIDAYAH SYAZWANI BINTI MOHD SAUTI" },
     { matrix: "18DIT26F1054", name: "NUR DEENA FARZANA BINTI ZAMRI" },
     { matrix: "18DIT26F1067", name: "MUHAMMAD IRFAN HARITH BIN MOHD HERMAN" },
     { matrix: "18DIT26F1078", name: "RAJA MUHAMMAD DANIEL HARRIS BIN RAJA MAZRUL KAMARULZAMAN" },
@@ -878,4 +931,517 @@
     { matrix: "18DIT26F1102", name: "NURIN SYAFIAH BINTI NORDIN" },
     { matrix: "18DIT26F1103", name: "MUHAMAD HARIES BIN MUHAMAD HAFIZ" },
     { matrix: "18DIT26F1114", name: "NUR AISYAH ARMA BINTI ARFAH" },
-    { matrix: "18DIT26F1115", name: "
+    { matrix: "18DIT26F1115", name: "NUR FARAH FATIMAH BINTI ASHRUL" },
+    { matrix: "18DIT26F1121", name: "NHAM FON A/P PRACHOP" },
+    { matrix: "18DIT26F1122", name: "KATIRRAVAN A/L GANTHISPARAN" },
+    { matrix: "18DIT26F1127", name: "ONG SIM LOK" },
+    { matrix: "18DIT26F1128", name: "MUHAMMAD IKQRAM ZULFIQQAR BIN IDRIS" },
+    { matrix: "18DIT26F1132", name: "WAN AIMARR IQRAM BIN WAN NOORIZUANDI" },
+    { matrix: "18DIT26F1134", name: "ATHIRAH RAUQAH BINTI ROSLI" },
+    { matrix: "18DIT26F1144", name: "NURUL ZAHIRAH BINTI ISHAK" },
+    { matrix: "18DIT26F1152", name: "MUHAMMAD THAQIF ZAFRAN BIN RAHIM" },
+    { matrix: "18DIT26F1159", name: "NUR ALEYA QHAISARA BINTI MOHD ALI" },
+    { matrix: "18DIT26F1176", name: "ASRI BIN MUHD ABDUH" },
+    { matrix: "18DIT26F1183", name: "NURUL SYAFIQAH AINA BINTI MOHAMAD ANUAR" },
+    { matrix: "18DIT26F1192", name: "NUR NAJWA BALQIS BINTI MOHD ASMANIZAM" },
+    { matrix: "18DIT26F1198", name: "IZZAM HAKIMI BIN NOR AZELIN" }
+  ];
+
+  // ===== STORAGE KEY =====
+  const KEY_CURRENT = 'selectedStudent';
+
+  // ===== STATE =====
+  let currentStudent = null;
+  let groups = [];          // dari Firestore (realtime)
+  let selectedSize = 3;
+  let unsubGroups = null;
+
+  // ===== DOM =====
+  const pageLoading = document.getElementById('pageLoading');
+  const mainContent = document.getElementById('mainContent');
+  const profileName = document.getElementById('profileName');
+  const profileMatrix = document.getElementById('profileMatrix');
+  const profileStatus = document.getElementById('profileStatus');
+  const avatarEl = document.getElementById('avatar');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const totalStudentsEl = document.getElementById('totalStudents');
+  const joinedCountEl = document.getElementById('joinedCount');
+  const notJoinedCountEl = document.getElementById('notJoinedCount');
+  const groupCountBadge = document.getElementById('groupCountBadge');
+  const groupList = document.getElementById('groupList');
+  const createGroupBtn = document.getElementById('createGroupBtn');
+
+  const createModal = document.getElementById('createModal');
+  const closeCreateModal = document.getElementById('closeCreateModal');
+  const cancelCreate = document.getElementById('cancelCreate');
+  const confirmCreate = document.getElementById('confirmCreate');
+  const groupNameInput = document.getElementById('groupNameInput');
+  const sizeSelector = document.getElementById('sizeSelector');
+
+  const detailModal = document.getElementById('detailModal');
+  const closeDetailModal = document.getElementById('closeDetailModal');
+  const detailTitle = document.getElementById('detailTitle');
+  const detailSubtitle = document.getElementById('detailSubtitle');
+  const detailInfo = document.getElementById('detailInfo');
+  const detailMemberCount = document.getElementById('detailMemberCount');
+  const membersList = document.getElementById('membersList');
+  const detailActions = document.getElementById('detailActions');
+
+  const toastEl = document.getElementById('toast');
+
+  // ===== LOAD CURRENT STUDENT (sync dari index.html) =====
+  function loadCurrentStudent() {
+    const raw = localStorage.getItem(KEY_CURRENT);
+    if (!raw) {
+      window.location.href = 'index.html';
+      return false;
+    }
+    try {
+      currentStudent = JSON.parse(raw);
+      // Validate
+      if (!currentStudent.matrix || !currentStudent.name) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    } catch (e) {
+      window.location.href = 'index.html';
+      return false;
+    }
+  }
+
+  // ===== HELPERS =====
+  function initials(name) {
+    return name.split(' ').filter(Boolean).slice(0, 2)
+      .map(w => w[0]).join('').toUpperCase();
+  }
+
+  function getStudentByMatrix(matrix) {
+    return ALL_STUDENTS.find(s => s.matrix === matrix);
+  }
+
+  function isStudentInAnyGroup(matrix) {
+    return groups.some(g => (g.members || []).includes(matrix));
+  }
+
+  function getGroupOfStudent(matrix) {
+    return groups.find(g => (g.members || []).includes(matrix));
+  }
+
+  // ===== SEED STUDENTS (auto-upload kalau kosong) =====
+  async function seedStudentsIfEmpty() {
+    const snap = await getDocs(collection(db, "students"));
+    if (snap.empty) {
+      console.log("🔥 Seeding students ke Firestore...");
+      const promises = ALL_STUDENTS.map((s, i) => {
+        return setDoc(doc(db, "students", s.matrix), {
+          matrix: s.matrix,
+          name: s.name,
+          order: i + 1,
+          createdAt: serverTimestamp()
+        });
+      });
+      await Promise.all(promises);
+      console.log("✅ Students seed selesai!");
+    }
+  }
+
+  // ===== REAL-TIME LISTENER: GROUPS =====
+  function listenGroups() {
+    const q = query(collection(db, "groups"), orderBy("createdAt", "asc"));
+    unsubGroups = onSnapshot(q, (snap) => {
+      groups = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+      renderAll();
+    }, (err) => {
+      console.error("Firestore groups error:", err);
+      showToast('⚠️ Gagal sambung Firestore', 'error');
+    });
+  }
+
+  // ===== RENDER PROFILE =====
+  function renderProfile() {
+    if (!currentStudent) return;
+    avatarEl.textContent = initials(currentStudent.name);
+    profileName.textContent = currentStudent.name;
+    profileMatrix.textContent = currentStudent.matrix;
+
+    const myGroup = getGroupOfStudent(currentStudent.matrix);
+    if (myGroup) {
+      profileStatus.textContent = `✅ Dah join: ${myGroup.name}`;
+      profileStatus.classList.add('joined');
+    } else {
+      profileStatus.textContent = '⏳ Belum join group';
+      profileStatus.classList.remove('joined');
+    }
+  }
+
+  // ===== RENDER STATS =====
+  function renderStats() {
+    const joinedSet = new Set();
+    groups.forEach(g => (g.members || []).forEach(m => joinedSet.add(m)));
+
+    const total = ALL_STUDENTS.length;
+    const joined = joinedSet.size;
+    const notJoined = total - joined;
+
+    totalStudentsEl.textContent = total;
+    joinedCountEl.textContent = joined;
+    notJoinedCountEl.textContent = notJoined;
+    groupCountBadge.textContent = `${groups.length}/${MAX_GROUPS_TOTAL}`;
+
+    // Update button state
+    if (groups.length >= MAX_GROUPS_TOTAL) {
+      createGroupBtn.disabled = true;
+      createGroupBtn.textContent = '🚫 Group Penuh';
+    } else if (isStudentInAnyGroup(currentStudent.matrix)) {
+      createGroupBtn.disabled = true;
+      createGroupBtn.textContent = '➕ Cipta Group';
+      createGroupBtn.title = 'Anda sudah join group';
+    } else {
+      createGroupBtn.disabled = false;
+      createGroupBtn.innerHTML = '➕ Cipta Group';
+      createGroupBtn.title = '';
+    }
+  }
+
+  // ===== RENDER GROUP LIST =====
+  function renderGroups() {
+    if (groups.length === 0) {
+      groupList.innerHTML = `
+        <div class="empty-state">
+          <div class="emoji">🏗️</div>
+          <div class="title">Belum ada group</div>
+          <div class="desc">Jadilah yang pertama cipta group!</div>
+        </div>
+      `;
+      return;
+    }
+
+    groupList.innerHTML = '';
+    groups.forEach((g) => {
+      const creator = getStudentByMatrix(g.creator);
+      const members = g.members || [];
+      const isMine = members.includes(currentStudent.matrix);
+      const isCreator = g.creator === currentStudent.matrix;
+      const isFull = members.length >= g.size;
+      const otherGroup = getGroupOfStudent(currentStudent.matrix);
+      const alreadyInOther = otherGroup && otherGroup.id !== g.id;
+
+      const card = document.createElement('div');
+      card.className = 'group-card'
+        + (isMine ? ' my-group' : '')
+        + (isFull && !isMine ? ' full' : '');
+
+      // JOIN button state
+      let btnHTML = '';
+      if (isCreator) {
+        btnHTML = `<button class="join-btn creator" disabled>👑 Pencipta</button>`;
+      } else if (isMine) {
+        btnHTML = `<button class="join-btn joined" disabled>✅ Joined</button>`;
+      } else if (isFull) {
+        btnHTML = `<button class="join-btn" disabled>🚫 Penuh</button>`;
+      } else if (alreadyInOther) {
+        btnHTML = `<button class="join-btn" disabled title="Anda sudah dalam group lain">🔒 Locked</button>`;
+      } else {
+        btnHTML = `<button class="join-btn" data-join="${g.id}">➕ Join</button>`;
+      }
+
+      card.innerHTML = `
+        <div class="group-top">
+          <div class="group-title">
+            <div class="group-icon">👥</div>
+            <div style="min-width:0; flex:1;">
+              <div class="group-name">${g.name}</div>
+              <div class="group-creator">Dicipta oleh <strong>${creator ? creator.name : 'Unknown'}</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="group-meta">
+          <div class="member-count ${isFull ? 'full-count' : ''}">
+            👤 ${members.length}/${g.size} ahli
+          </div>
+          ${btnHTML}
+        </div>
+      `;
+
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.join-btn')) return;
+        openDetail(g.id);
+      });
+
+      groupList.appendChild(card);
+    });
+
+    groupList.querySelectorAll('[data-join]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        joinGroup(btn.dataset.join);
+      });
+    });
+  }
+
+  // ===== JOIN GROUP (Firestore transaction) =====
+  async function joinGroup(groupId) {
+    if (isStudentInAnyGroup(currentStudent.matrix)) {
+      showToast('❌ Anda sudah join group lain', 'error');
+      return;
+    }
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const groupRef = doc(db, "groups", groupId);
+        const groupSnap = await transaction.get(groupRef);
+        if (!groupSnap.exists()) throw new Error("Group tak wujud");
+
+        const data = groupSnap.data();
+        const members = data.members || [];
+
+        if (members.includes(currentStudent.matrix)) {
+          throw new Error("Anda dah join group ini");
+        }
+        if (members.length >= data.size) {
+          throw new Error("Group sudah penuh");
+        }
+
+        transaction.update(groupRef, {
+          members: [...members, currentStudent.matrix]
+        });
+      });
+
+      const g = groups.find(x => x.id === groupId);
+      showToast(`✅ Berjaya join ${g ? g.name : 'group'}!`, 'success');
+    } catch (err) {
+      console.error(err);
+      showToast(`❌ ${err.message}`, 'error');
+    }
+  }
+
+  // ===== CREATE GROUP (Firestore) =====
+  function openCreateModal() {
+    if (groups.length >= MAX_GROUPS_TOTAL) {
+      showToast(`❌ Dah capai had ${MAX_GROUPS_TOTAL} group`, 'error');
+      return;
+    }
+    if (isStudentInAnyGroup(currentStudent.matrix)) {
+      showToast('❌ Anda sudah join group', 'error');
+      return;
+    }
+    groupNameInput.value = '';
+    selectedSize = 3;
+    updateSizeButtons();
+    createModal.classList.add('show');
+    setTimeout(() => groupNameInput.focus(), 100);
+  }
+
+  function closeCreateModalFn() {
+    createModal.classList.remove('show');
+  }
+
+  function updateSizeButtons() {
+    sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+      btn.classList.toggle('active', Number(btn.dataset.size) === selectedSize);
+    });
+  }
+
+  async function createGroup() {
+    if (groups.length >= MAX_GROUPS_TOTAL) {
+      showToast(`❌ Dah capai had ${MAX_GROUPS_TOTAL} group`, 'error');
+      return;
+    }
+    if (isStudentInAnyGroup(currentStudent.matrix)) {
+      showToast('❌ Anda sudah join group', 'error');
+      return;
+    }
+
+    let name = groupNameInput.value.trim();
+    if (!name) {
+      name = `Group ${groups.length + 1}`;
+    }
+
+    // Check duplicate name
+    const existingNames = groups.map(g => g.name.toLowerCase());
+    if (existingNames.includes(name.toLowerCase())) {
+      showToast('❌ Nama group dah wujud', 'error');
+      return;
+    }
+
+    confirmCreate.disabled = true;
+    confirmCreate.textContent = 'Mencipta...';
+
+    try {
+      // Guna doc ID auto-generate
+      const newDocRef = doc(collection(db, "groups"));
+      await setDoc(newDocRef, {
+        name: name,
+        creator: currentStudent.matrix,
+        creatorName: currentStudent.name,
+        size: selectedSize,
+        members: [currentStudent.matrix],
+        createdAt: serverTimestamp()
+      });
+
+      closeCreateModalFn();
+      showToast(`✅ ${name} berjaya dicipta!`, 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('❌ Gagal cipta group', 'error');
+    } finally {
+      confirmCreate.disabled = false;
+      confirmCreate.textContent = 'Cipta Group';
+    }
+  }
+
+  // ===== DETAIL MODAL =====
+  function openDetail(groupId) {
+    const g = groups.find(x => x.id === groupId);
+    if (!g) return;
+
+    const creator = getStudentByMatrix(g.creator);
+    const members = g.members || [];
+    const isMine = members.includes(currentStudent.matrix);
+    const isCreator = g.creator === currentStudent.matrix;
+    const isFull = members.length >= g.size;
+
+    detailTitle.textContent = g.name;
+    detailSubtitle.textContent = `Dicipta oleh ${creator ? creator.name : (g.creatorName || 'Unknown')}`;
+    detailMemberCount.textContent = `${members.length}/${g.size}`;
+
+    if (isCreator) {
+      detailInfo.style.display = 'flex';
+      detailInfo.className = 'info-box';
+      detailInfo.innerHTML = '👑 Anda adalah <strong>pencipta</strong> group ini.';
+    } else if (isMine) {
+      detailInfo.style.display = 'flex';
+      detailInfo.className = 'info-box';
+      detailInfo.innerHTML = '✅ Anda adalah <strong>ahli</strong> group ini.';
+    } else {
+      detailInfo.style.display = 'none';
+    }
+
+    membersList.innerHTML = members.map((matrix, i) => {
+      const s = getStudentByMatrix(matrix);
+      if (!s) return '';
+      const isC = matrix === g.creator;
+      const isYou = matrix === currentStudent.matrix;
+      return `
+        <div class="member-item ${isC ? 'creator' : ''}">
+          <div class="m-num">${i + 1}</div>
+          <div class="m-info">
+            <div class="m-matrix">${s.matrix}</div>
+            <div class="m-name">${s.name}</div>
+          </div>
+          ${isC ? '<span class="creator-badge">👑 CREATOR</span>' : ''}
+          ${isYou ? '<span class="you-badge">YOU</span>' : ''}
+        </div>
+      `;
+    }).join('');
+
+    detailActions.innerHTML = '';
+    if (!isMine && !isFull && !isStudentInAnyGroup(currentStudent.matrix)) {
+      const btn = document.createElement('button');
+      btn.className = 'btn-primary';
+      btn.textContent = '➕ Join Group';
+      btn.addEventListener('click', () => {
+        closeDetailModalFn();
+        joinGroup(groupId);
+      });
+      detailActions.appendChild(btn);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'btn-secondary';
+      btn.textContent = 'Tutup';
+      btn.addEventListener('click', closeDetailModalFn);
+      detailActions.appendChild(btn);
+    }
+
+    detailModal.classList.add('show');
+  }
+
+  function closeDetailModalFn() {
+    detailModal.classList.remove('show');
+  }
+
+  // ===== RENDER ALL =====
+  function renderAll() {
+    renderProfile();
+    renderStats();
+    renderGroups();
+  }
+
+  // ===== TOAST =====
+  let toastTimer;
+  function showToast(msg, type = '') {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('show');
+    }, 2800);
+  }
+
+  // ===== EVENTS =====
+  createGroupBtn.addEventListener('click', openCreateModal);
+  closeCreateModal.addEventListener('click', closeCreateModalFn);
+  cancelCreate.addEventListener('click', closeCreateModalFn);
+  confirmCreate.addEventListener('click', createGroup);
+
+  sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedSize = Number(btn.dataset.size);
+      updateSizeButtons();
+    });
+  });
+
+  groupNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') createGroup();
+  });
+
+  closeDetailModal.addEventListener('click', closeDetailModalFn);
+
+  createModal.addEventListener('click', (e) => {
+    if (e.target === createModal) closeCreateModalFn();
+  });
+  detailModal.addEventListener('click', (e) => {
+    if (e.target === detailModal) closeDetailModalFn();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeCreateModalFn();
+      closeDetailModalFn();
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    if (confirm('Tukar pelajar? Anda akan kembali ke page pilih nama.')) {
+      if (unsubGroups) unsubGroups();
+      localStorage.removeItem(KEY_CURRENT);
+      window.location.href = 'index.html';
+    }
+  });
+
+  // ===== INIT =====
+  (async function init() {
+    if (!loadCurrentStudent()) return;
+
+    try {
+      await seedStudentsIfEmpty();
+      listenGroups();
+
+      // Sembunyikan loading, tunjuk content
+      pageLoading.style.display = 'none';
+      mainContent.style.display = 'block';
+
+      // Render profile awal
+      renderProfile();
+    } catch (err) {
+      console.error(err);
+      pageLoading.innerHTML = `⚠️ Gagal sambung Firestore.<br><small>${err.message}</small>`;
+    }
+  })();
+</script>
+</body>
+</html>
