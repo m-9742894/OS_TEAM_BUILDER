@@ -883,6 +883,7 @@
     getFirestore,
     collection,
     getDocs,
+    getDoc,
     doc,
     setDoc,
     updateDoc,
@@ -919,7 +920,7 @@
     { matrix: "18DIT26F1017", name: "TEOH QIAN HOOI" },
     { matrix: "18DIT26F1024", name: "NURATHIRAH BADRIAH BINTI MOHD REDHUAN" },
     { matrix: "18DIT26F1035", name: "KAIYISAH ADNIN BINTI ZUNNASRI" },
-    { matrix: "18DIT26F1047", name: "NURUL HIDAYAH SYAZWANI BINTI MOHD SAUTI" },
+    { matrix: "18DIT26F1047", name: "NURUL HIDAYAH SYAZWANI BINTI MOHD SAYUTI" },
     { matrix: "18DIT26F1054", name: "NUR DEENA FARZANA BINTI ZAMRI" },
     { matrix: "18DIT26F1067", name: "MUHAMMAD IRFAN HARITH BIN MOHD HERMAN" },
     { matrix: "18DIT26F1078", name: "RAJA MUHAMMAD DANIEL HARRIS BIN RAJA MAZRUL KAMARULZAMAN" },
@@ -946,15 +947,6 @@
     { matrix: "18DIT26F1192", name: "NUR NAJWA BALQIS BINTI MOHD ASMANIZAM" },
     { matrix: "18DIT26F1198", name: "IZZAM HAKIMI BIN NOR AZELIN" }
   ];
-
-  // ===== STORAGE KEY =====
-  const KEY_CURRENT = 'selectedStudent';
-
-  // ===== STATE =====
-  let currentStudent = null;
-  let groups = [];          // dari Firestore (realtime)
-  let selectedSize = 3;
-  let unsubGroups = null;
 
   // ===== DOM =====
   const pageLoading = document.getElementById('pageLoading');
@@ -989,26 +981,11 @@
 
   const toastEl = document.getElementById('toast');
 
-  // ===== LOAD CURRENT STUDENT (sync dari index.html) =====
-  function loadCurrentStudent() {
-    const raw = localStorage.getItem(KEY_CURRENT);
-    if (!raw) {
-      window.location.href = 'index.html';
-      return false;
-    }
-    try {
-      currentStudent = JSON.parse(raw);
-      // Validate
-      if (!currentStudent.matrix || !currentStudent.name) {
-        window.location.href = 'index.html';
-        return false;
-      }
-      return true;
-    } catch (e) {
-      window.location.href = 'index.html';
-      return false;
-    }
-  }
+  // ===== STATE =====
+  let currentStudent = null;
+  let groups = [];          // dari Firestore (realtime)
+  let selectedSize = 3;
+  let unsubGroups = null;
 
   // ===== HELPERS =====
   function initials(name) {
@@ -1028,21 +1005,64 @@
     return groups.find(g => (g.members || []).includes(matrix));
   }
 
+  // ===== LOAD CURRENT STUDENT (dari Firestore session) =====
+  async function loadCurrentStudent() {
+    const deviceId = localStorage.getItem('deviceId');
+    if (!deviceId) {
+      window.location.href = 'index.html';
+      return false;
+    }
+
+    try {
+      const sessionSnap = await getDoc(doc(db, "sessions", deviceId));
+      if (!sessionSnap.exists()) {
+        // Fallback ke localStorage
+        const raw = localStorage.getItem('selectedStudent');
+        if (!raw) {
+          window.location.href = 'index.html';
+          return false;
+        }
+        currentStudent = JSON.parse(raw);
+        return true;
+      }
+      const session = sessionSnap.data();
+      currentStudent = {
+        matrix: session.matrix,
+        name: session.name
+      };
+      return true;
+    } catch (err) {
+      console.error("Session load error:", err);
+      // Fallback ke localStorage
+      const raw = localStorage.getItem('selectedStudent');
+      if (!raw) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      currentStudent = JSON.parse(raw);
+      return true;
+    }
+  }
+
   // ===== SEED STUDENTS (auto-upload kalau kosong) =====
   async function seedStudentsIfEmpty() {
-    const snap = await getDocs(collection(db, "students"));
-    if (snap.empty) {
-      console.log("🔥 Seeding students ke Firestore...");
-      const promises = ALL_STUDENTS.map((s, i) => {
-        return setDoc(doc(db, "students", s.matrix), {
-          matrix: s.matrix,
-          name: s.name,
-          order: i + 1,
-          createdAt: serverTimestamp()
+    try {
+      const snap = await getDocs(collection(db, "students"));
+      if (snap.empty) {
+        console.log("🔥 Seeding students ke Firestore...");
+        const promises = ALL_STUDENTS.map((s, i) => {
+          return setDoc(doc(db, "students", s.matrix), {
+            matrix: s.matrix,
+            name: s.name,
+            order: i + 1,
+            createdAt: serverTimestamp()
+          });
         });
-      });
-      await Promise.all(promises);
-      console.log("✅ Students seed selesai!");
+        await Promise.all(promises);
+        console.log("✅ Students seed selesai!");
+      }
+    } catch (err) {
+      console.error("Seed error:", err);
     }
   }
 
@@ -1155,7 +1175,7 @@
             <div class="group-icon">👥</div>
             <div style="min-width:0; flex:1;">
               <div class="group-name">${g.name}</div>
-              <div class="group-creator">Dicipta oleh <strong>${creator ? creator.name : 'Unknown'}</strong></div>
+              <div class="group-creator">Dicipta oleh <strong>${creator ? creator.name : (g.creatorName || 'Unknown')}</strong></div>
             </div>
           </div>
         </div>
@@ -1219,7 +1239,7 @@
     }
   }
 
-  // ===== CREATE GROUP (Firestore) =====
+  // ===== CREATE GROUP =====
   function openCreateModal() {
     if (groups.length >= MAX_GROUPS_TOTAL) {
       showToast(`❌ Dah capai had ${MAX_GROUPS_TOTAL} group`, 'error');
@@ -1272,7 +1292,6 @@
     confirmCreate.textContent = 'Mencipta...';
 
     try {
-      // Guna doc ID auto-generate
       const newDocRef = doc(collection(db, "groups"));
       await setDoc(newDocRef, {
         name: name,
@@ -1415,27 +1434,35 @@
     }
   });
 
-  logoutBtn.addEventListener('click', () => {
-    if (confirm('Tukar pelajar? Anda akan kembali ke page pilih nama.')) {
-      if (unsubGroups) unsubGroups();
-      localStorage.removeItem(KEY_CURRENT);
-      window.location.href = 'index.html';
+  // ===== LOGOUT (delete session + redirect) =====
+  logoutBtn.addEventListener('click', async () => {
+    if (!confirm('Tukar pelajar? Anda akan kembali ke page pilih nama.')) return;
+
+    try {
+      const deviceId = localStorage.getItem('deviceId');
+      if (deviceId) {
+        await deleteDoc(doc(db, "sessions", deviceId));
+      }
+    } catch (e) {
+      console.error("Logout error:", e);
     }
+
+    if (unsubGroups) unsubGroups();
+    localStorage.removeItem('selectedStudent');
+    window.location.href = 'index.html';
   });
 
   // ===== INIT =====
   (async function init() {
-    if (!loadCurrentStudent()) return;
+    if (!(await loadCurrentStudent())) return;
 
     try {
       await seedStudentsIfEmpty();
       listenGroups();
 
-      // Sembunyikan loading, tunjuk content
       pageLoading.style.display = 'none';
       mainContent.style.display = 'block';
 
-      // Render profile awal
       renderProfile();
     } catch (err) {
       console.error(err);
