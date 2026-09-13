@@ -692,7 +692,6 @@
     flex-shrink: 0;
   }
 
-  /* Remove member button */
   .remove-btn {
     padding: 6px 12px;
     border-radius: 8px;
@@ -738,7 +737,6 @@
     color: #fca5a5;
   }
 
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 30px;
@@ -765,7 +763,6 @@
   .toast.success { border-color: rgba(16, 185, 129, 0.5); }
   .toast.error { border-color: rgba(239, 68, 68, 0.5); }
 
-  /* Responsive */
   @media (max-width: 600px) {
     body { padding: 12px; }
     .container { gap: 16px; }
@@ -961,7 +958,7 @@
   const MIN_GROUP_SIZE = 2;
   const MAX_GROUP_SIZE = 5;
 
-  // ===== DATA PELAJAR =====
+  // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
   const ALL_STUDENTS = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
@@ -995,7 +992,8 @@
     { matrix: "18DIT26F1176", name: "ASRI BIN MUHD ABDUH" },
     { matrix: "18DIT26F1183", name: "NURUL SYAFIQAH AINA BINTI MOHAMAD ANUAR" },
     { matrix: "18DIT26F1192", name: "NUR NAJWA BALQIS BINTI MOHD ASMANIZAM" },
-    { matrix: "18DIT26F1198", name: "IZZAM HAKIMI BIN NOR AZELIN" }
+    { matrix: "18DIT26F1198", name: "IZZAM HAKIMI BIN NOR AZELIN" },
+    { matrix: "18DIT26F1998", name: "ADAM DARWISY BIN MUHD HAFIZ" }
   ];
 
   // ===== DOM =====
@@ -1285,7 +1283,7 @@
     }
   }
 
-  // ===== LEAVE GROUP (ahli keluar sendiri) =====
+  // ===== LEAVE GROUP =====
   async function leaveGroup(groupId) {
     const g = groups.find(x => x.id === groupId);
     if (!g) return;
@@ -1323,7 +1321,7 @@
     }
   }
 
-  // ===== REMOVE MEMBER (pencipta buang ahli) =====
+  // ===== REMOVE MEMBER =====
   async function removeMember(groupId, memberMatrix) {
     const g = groups.find(x => x.id === groupId);
     if (!g) return;
@@ -1358,7 +1356,6 @@
       });
 
       showToast(`✅ Berjaya remove ${member ? member.name : 'ahli'}`, 'success');
-      // Refresh detail modal
       openDetail(groupId);
     } catch (err) {
       console.error(err);
@@ -1366,7 +1363,7 @@
     }
   }
 
-  // ===== DELETE GROUP (pencipta delete group) =====
+  // ===== DELETE GROUP =====
   async function deleteGroup(groupId) {
     const g = groups.find(x => x.id === groupId);
     if (!g) return;
@@ -1480,7 +1477,6 @@
     detailSubtitle.textContent = `Dicipta oleh ${creator ? creator.name : (g.creatorName || 'Unknown')}`;
     detailMemberCount.textContent = `${members.length}/${g.size}`;
 
-    // Info box
     if (isCreator) {
       detailInfo.style.display = 'flex';
       detailInfo.className = 'info-box';
@@ -1493,13 +1489,12 @@
       detailInfo.style.display = 'none';
     }
 
-    // Members list
     membersList.innerHTML = members.map((matrix, i) => {
       const s = getStudentByMatrix(matrix);
       if (!s) return '';
       const isC = matrix === g.creator;
       const isYou = matrix === currentStudent.matrix;
-      const canRemove = isCreator && !isC; // pencipta boleh remove orang lain (bukan diri sendiri)
+      const canRemove = isCreator && !isC;
 
       return `
         <div class="member-item ${isC ? 'creator' : ''}">
@@ -1515,7 +1510,6 @@
       `;
     }).join('');
 
-    // Attach remove listener
     membersList.querySelectorAll('[data-remove]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1523,11 +1517,9 @@
       });
     });
 
-    // Actions
     detailActions.innerHTML = '';
 
     if (isCreator) {
-      // Pencipta: Delete Group
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'btn-danger';
       deleteBtn.textContent = '🗑️ Delete Group';
@@ -1540,7 +1532,6 @@
       closeBtn.addEventListener('click', closeDetailModalFn);
       detailActions.appendChild(closeBtn);
     } else if (isMine) {
-      // Ahli biasa: Leave Group
       const leaveBtn = document.createElement('button');
       leaveBtn.className = 'btn-warning';
       leaveBtn.textContent = '🚪 Leave Group';
@@ -1553,7 +1544,6 @@
       closeBtn.addEventListener('click', closeDetailModalFn);
       detailActions.appendChild(closeBtn);
     } else if (!isFull && !isStudentInAnyGroup(currentStudent.matrix)) {
-      // Bukan ahli: Join
       const joinBtn = document.createElement('button');
       joinBtn.className = 'btn-primary';
       joinBtn.textContent = '➕ Join Group';
@@ -1569,7 +1559,6 @@
       closeBtn.addEventListener('click', closeDetailModalFn);
       detailActions.appendChild(closeBtn);
     } else {
-      // Locked / penuh
       const closeBtn = document.createElement('button');
       closeBtn.className = 'btn-secondary';
       closeBtn.textContent = 'Tutup';
@@ -1584,16 +1573,10 @@
     detailModal.classList.remove('show');
   }
 
-  // ===== RENDER ALL =====
   function renderAll() {
     renderProfile();
     renderStats();
     renderGroups();
-
-    // Kalau detail modal tengah open, refresh content (contoh: lepas remove member)
-    if (detailModal.classList.contains('show') && detailTitle.dataset.groupId) {
-      // biar je, tak refresh auto sebab user tengah tengok
-    }
   }
 
   // ===== TOAST =====
