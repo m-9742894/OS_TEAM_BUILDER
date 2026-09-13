@@ -540,7 +540,7 @@
 
   .size-selector {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
   }
   .size-btn {
@@ -733,7 +733,6 @@
     .member-count { font-size: 0.75rem; padding: 5px 10px; }
     .join-btn { padding: 7px 14px; font-size: 0.78rem; }
     .modal { padding: 20px; border-radius: 18px; }
-    .size-selector { grid-template-columns: repeat(4, 1fr); }
   }
   @media (max-width: 380px) {
     .profile-info .name { font-size: 0.95rem; }
@@ -828,17 +827,14 @@
       </div>
 
       <div class="form-group">
-        <label>Bilangan Ahli (Max 8)</label>
+        <label>Bilangan Ahli (Max 5)</label>
         <div class="size-selector" id="sizeSelector">
           <button class="size-btn" data-size="2">2</button>
           <button class="size-btn active" data-size="3">3</button>
           <button class="size-btn" data-size="4">4</button>
           <button class="size-btn" data-size="5">5</button>
-          <button class="size-btn" data-size="6">6</button>
-          <button class="size-btn" data-size="7">7</button>
-          <button class="size-btn" data-size="8">8</button>
         </div>
-        <div class="hint">Min 2, Max 8 orang (termasuk anda)</div>
+        <div class="hint">Min 2, Max 5 orang (termasuk anda)</div>
       </div>
 
       <div class="modal-actions">
@@ -909,7 +905,8 @@
   const db = getFirestore(app);
 
   // ===== KONFIG =====
-  const MAX_GROUPS_TOTAL = 8;
+  const MAX_GROUPS_TOTAL = 8;      // max group total dalam sistem
+  const MAX_GROUP_SIZE = 5;        // max ahli per group
 
   // ===== DATA PELAJAR (WAJIB SAMA dengan index.html) =====
   const ALL_STUDENTS = [
@@ -1222,7 +1219,7 @@
         if (members.includes(currentStudent.matrix)) {
           throw new Error("Anda dah join group ini");
         }
-        if (members.length >= data.size) {
+        if (members.length >= data.size || members.length >= MAX_GROUP_SIZE) {
           throw new Error("Group sudah penuh");
         }
 
@@ -1273,6 +1270,10 @@
     }
     if (isStudentInAnyGroup(currentStudent.matrix)) {
       showToast('❌ Anda sudah join group', 'error');
+      return;
+    }
+    if (selectedSize > MAX_GROUP_SIZE) {
+      showToast(`❌ Max ${MAX_GROUP_SIZE} orang sahaja`, 'error');
       return;
     }
 
