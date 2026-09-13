@@ -70,7 +70,7 @@
     padding-bottom: 40px;
   }
 
-  /* ===== PROFILE ===== */
+  /* PROFILE */
   .profile {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.15));
     border: 1px solid rgba(99, 102, 241, 0.3);
@@ -84,7 +84,6 @@
     position: relative;
     overflow: hidden;
   }
-
   .profile::before {
     content: '';
     position: absolute;
@@ -108,7 +107,6 @@
   }
 
   .profile-info { flex: 1; min-width: 0; }
-
   .profile-info .label {
     font-size: 0.72rem;
     color: var(--text-muted);
@@ -117,21 +115,18 @@
     font-weight: 700;
     margin-bottom: 4px;
   }
-
   .profile-info .name {
     font-size: clamp(1rem, 2.5vw, 1.2rem);
     font-weight: 700;
     margin-bottom: 4px;
     word-break: break-word;
   }
-
   .profile-info .matrix {
     font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: 600;
     letter-spacing: 0.5px;
   }
-
   .profile-info .status-badge {
     display: inline-block;
     margin-top: 8px;
@@ -143,7 +138,6 @@
     color: #fcd34d;
     border: 1px solid rgba(245, 158, 11, 0.3);
   }
-
   .profile-info .status-badge.joined {
     background: rgba(16, 185, 129, 0.2);
     color: #6ee7b7;
@@ -167,13 +161,12 @@
     border-color: rgba(239, 68, 68, 0.3);
   }
 
-  /* ===== STATS ===== */
+  /* STATS */
   .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
-
   .stat-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -181,20 +174,12 @@
     padding: 18px 16px;
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
   }
-
   .stat-card:hover {
     transform: translateY(-2px);
     background: var(--card-hover);
   }
-
-  .stat-card .stat-icon {
-    font-size: 1.4rem;
-    margin-bottom: 8px;
-  }
-
+  .stat-card .stat-icon { font-size: 1.4rem; margin-bottom: 8px; }
   .stat-card .stat-value {
     font-size: clamp(1.4rem, 4vw, 1.8rem);
     font-weight: 800;
@@ -204,7 +189,6 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
   .stat-card .stat-label {
     font-size: 0.72rem;
     color: var(--text-muted);
@@ -212,17 +196,15 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-
   .stat-card.joined { border-color: rgba(16, 185, 129, 0.3); }
   .stat-card.not-joined { border-color: rgba(245, 158, 11, 0.3); }
 
-  /* ===== SECTION ===== */
+  /* SECTION */
   .section {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
-
   .section-header {
     display: flex;
     justify-content: space-between;
@@ -231,7 +213,6 @@
     gap: 10px;
     padding: 0 4px;
   }
-
   .section-header h2 {
     font-size: 1.1rem;
     font-weight: 700;
@@ -239,7 +220,6 @@
     align-items: center;
     gap: 8px;
   }
-
   .section-header h2 .badge {
     font-size: 0.7rem;
     padding: 3px 8px;
@@ -248,7 +228,6 @@
     color: #a5b4fc;
     font-weight: 700;
   }
-
   .create-btn {
     padding: 10px 16px;
     border-radius: 12px;
@@ -264,25 +243,22 @@
     align-items: center;
     gap: 6px;
   }
-
   .create-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(99, 102, 241, 0.6);
   }
-
   .create-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
   }
 
-  /* ===== GROUP LIST ===== */
+  /* GROUP LIST */
   .group-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-
   .group-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -294,7 +270,6 @@
     overflow: hidden;
     cursor: pointer;
   }
-
   .group-card::before {
     content: '';
     position: absolute;
@@ -304,27 +279,20 @@
     opacity: 0;
     transition: opacity 0.25s ease;
   }
-
   .group-card:hover {
     background: var(--card-hover);
     transform: translateY(-2px);
     border-color: rgba(99, 102, 241, 0.4);
   }
-
   .group-card:hover::before { opacity: 1; }
 
   .group-card.my-group {
     border-color: rgba(16, 185, 129, 0.4);
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(99, 102, 241, 0.08));
   }
-
   .group-card.my-group::before {
     background: linear-gradient(180deg, var(--success), var(--primary));
     opacity: 1;
-  }
-
-  .group-card.full {
-    opacity: 0.7;
   }
 
   .group-top {
@@ -334,7 +302,6 @@
     gap: 12px;
     margin-bottom: 10px;
   }
-
   .group-title {
     display: flex;
     align-items: center;
@@ -342,7 +309,6 @@
     flex: 1;
     min-width: 0;
   }
-
   .group-icon {
     width: 40px; height: 40px;
     border-radius: 12px;
@@ -354,7 +320,6 @@
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
   }
-
   .group-name {
     font-size: 1rem;
     font-weight: 700;
@@ -363,16 +328,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
   .group-creator {
     font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 600;
   }
-
-  .group-creator strong {
-    color: #c7d2fe;
-  }
+  .group-creator strong { color: #c7d2fe; }
 
   .group-meta {
     display: flex;
@@ -383,7 +344,6 @@
     padding-top: 12px;
     border-top: 1px dashed rgba(255,255,255,0.08);
   }
-
   .member-count {
     display: flex;
     align-items: center;
@@ -396,7 +356,6 @@
     border-radius: 10px;
     border: 1px solid rgba(99, 102, 241, 0.25);
   }
-
   .member-count.full-count {
     background: rgba(239, 68, 68, 0.15);
     border-color: rgba(239, 68, 68, 0.3);
@@ -416,26 +375,22 @@
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
   }
-
   .join-btn:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(99, 102, 241, 0.6);
   }
-
   .join-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
     background: rgba(148, 163, 184, 0.3);
   }
-
   .join-btn.joined {
     background: rgba(16, 185, 129, 0.2);
     color: #6ee7b7;
     border: 1px solid rgba(16, 185, 129, 0.4);
     box-shadow: none;
   }
-
   .join-btn.creator {
     background: rgba(245, 158, 11, 0.2);
     color: #fcd34d;
@@ -443,7 +398,6 @@
     box-shadow: none;
   }
 
-  /* Empty */
   .empty-state {
     text-align: center;
     padding: 50px 20px;
@@ -452,24 +406,16 @@
     border: 1px dashed var(--border);
     border-radius: 16px;
   }
-
-  .empty-state .emoji {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-  }
-
+  .empty-state .emoji { font-size: 2.5rem; margin-bottom: 10px; }
   .empty-state .title {
     font-size: 1rem;
     font-weight: 700;
     color: var(--text);
     margin-bottom: 4px;
   }
+  .empty-state .desc { font-size: 0.85rem; }
 
-  .empty-state .desc {
-    font-size: 0.85rem;
-  }
-
-  /* ===== MODAL ===== */
+  /* MODAL */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -482,13 +428,8 @@
     padding: 20px;
     animation: fadeIn 0.2s ease;
   }
-
   .modal-overlay.show { display: flex; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
   .modal {
     background: linear-gradient(135deg, #1e1b4b, #0f172a);
@@ -503,7 +444,6 @@
     animation: slideUp 0.3s ease;
     position: relative;
   }
-
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
@@ -516,7 +456,6 @@
     margin-bottom: 20px;
     gap: 12px;
   }
-
   .modal-header h3 {
     font-size: 1.2rem;
     font-weight: 800;
@@ -525,7 +464,6 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
   .modal-header p {
     font-size: 0.8rem;
     color: var(--text-muted);
@@ -546,17 +484,12 @@
     align-items: center;
     justify-content: center;
   }
-
   .modal-close:hover {
     background: rgba(239, 68, 68, 0.2);
     color: #fca5a5;
   }
 
-  /* ===== FORM ===== */
-  .form-group {
-    margin-bottom: 18px;
-  }
-
+  .form-group { margin-bottom: 18px; }
   .form-group label {
     display: block;
     font-size: 0.85rem;
@@ -564,13 +497,11 @@
     color: var(--text);
     margin-bottom: 8px;
   }
-
   .form-group .hint {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 6px;
   }
-
   .form-group input[type="text"] {
     width: 100%;
     padding: 14px 16px;
@@ -582,7 +513,6 @@
     outline: none;
     transition: all 0.25s ease;
   }
-
   .form-group input[type="text"]:focus {
     border-color: var(--primary);
     background: var(--card-hover);
@@ -594,7 +524,6 @@
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
   }
-
   .size-btn {
     padding: 12px 0;
     border-radius: 10px;
@@ -606,12 +535,10 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-
   .size-btn:hover {
     background: var(--card-hover);
     border-color: rgba(99, 102, 241, 0.5);
   }
-
   .size-btn.active {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     border-color: transparent;
@@ -625,9 +552,7 @@
     gap: 10px;
     margin-top: 22px;
   }
-
-  .btn-secondary,
-  .btn-primary {
+  .btn-secondary, .btn-primary {
     flex: 1;
     padding: 14px;
     border-radius: 12px;
@@ -637,14 +562,12 @@
     border: none;
     transition: all 0.25s ease;
   }
-
   .btn-secondary {
     background: rgba(255,255,255,0.08);
     border: 1px solid var(--border);
     color: var(--text);
   }
   .btn-secondary:hover { background: rgba(255,255,255,0.12); }
-
   .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     color: #fff;
@@ -660,7 +583,6 @@
     box-shadow: none;
   }
 
-  /* ===== MEMBERS LIST (dalam modal detail) ===== */
   .members-list {
     display: flex;
     flex-direction: column;
@@ -669,7 +591,6 @@
     overflow-y: auto;
     padding-right: 4px;
   }
-
   .member-item {
     display: flex;
     align-items: center;
@@ -680,9 +601,7 @@
     border-radius: 12px;
     transition: all 0.2s ease;
   }
-
   .member-item:hover { background: var(--card-hover); }
-
   .member-item .m-num {
     width: 32px; height: 32px;
     border-radius: 10px;
@@ -695,20 +614,16 @@
     color: #fff;
     flex-shrink: 0;
   }
-
   .member-item.creator .m-num {
     background: linear-gradient(135deg, var(--warning), var(--accent));
   }
-
   .member-item .m-info { flex: 1; min-width: 0; }
-
   .member-item .m-matrix {
     font-size: 0.7rem;
     color: var(--text-muted);
     font-weight: 600;
     letter-spacing: 0.5px;
   }
-
   .member-item .m-name {
     font-size: 0.88rem;
     font-weight: 600;
@@ -716,7 +631,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
   .member-item .creator-badge {
     font-size: 0.62rem;
     padding: 3px 8px;
@@ -726,7 +640,6 @@
     font-weight: 700;
     flex-shrink: 0;
   }
-
   .member-item .you-badge {
     font-size: 0.62rem;
     padding: 3px 8px;
@@ -749,14 +662,13 @@
     gap: 10px;
     align-items: flex-start;
   }
-
   .info-box.warning {
     background: rgba(245, 158, 11, 0.1);
     border-color: rgba(245, 158, 11, 0.3);
     color: #fcd34d;
   }
 
-  /* ===== Toast ===== */
+  /* Toast */
   .toast {
     position: fixed;
     bottom: 30px;
@@ -776,16 +688,14 @@
     transition: all 0.35s ease;
     max-width: 90%;
   }
-
   .toast.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
-
   .toast.success { border-color: rgba(16, 185, 129, 0.5); }
   .toast.error { border-color: rgba(239, 68, 68, 0.5); }
 
-  /* ===== Responsive ===== */
+  /* Responsive */
   @media (max-width: 600px) {
     body { padding: 12px; }
     .container { gap: 16px; }
@@ -806,7 +716,6 @@
     .modal { padding: 20px; border-radius: 18px; }
     .size-selector { grid-template-columns: repeat(4, 1fr); }
   }
-
   @media (max-width: 380px) {
     .profile-info .name { font-size: 0.95rem; }
     .stat-card .stat-value { font-size: 1.2rem; }
@@ -825,7 +734,7 @@
   <div class="container">
 
     <!-- PROFILE -->
-    <div class="profile" id="profile">
+    <div class="profile">
       <div class="avatar" id="avatar">?</div>
       <div class="profile-info">
         <div class="label">Pelajar</div>
@@ -871,7 +780,7 @@
 
   </div>
 
-  <!-- ===== MODAL: CREATE GROUP ===== -->
+  <!-- MODAL: CREATE GROUP -->
   <div class="modal-overlay" id="createModal">
     <div class="modal">
       <div class="modal-header">
@@ -882,7 +791,7 @@
         <button class="modal-close" id="closeCreateModal">✕</button>
       </div>
 
-      <div class="info-box" id="createInfo">
+      <div class="info-box">
         💡 Anda akan menjadi <strong>pencipta</strong> dan <strong>ahli pertama</strong> dalam group ini.
       </div>
 
@@ -903,7 +812,7 @@
           <button class="size-btn" data-size="7">7</button>
           <button class="size-btn" data-size="8">8</button>
         </div>
-        <div class="hint" id="sizeHint">Min 2, Max 8 orang (termasuk anda)</div>
+        <div class="hint">Min 2, Max 8 orang (termasuk anda)</div>
       </div>
 
       <div class="modal-actions">
@@ -913,7 +822,7 @@
     </div>
   </div>
 
-  <!-- ===== MODAL: GROUP DETAIL ===== -->
+  <!-- MODAL: GROUP DETAIL -->
   <div class="modal-overlay" id="detailModal">
     <div class="modal">
       <div class="modal-header">
@@ -948,7 +857,7 @@
   const MIN_GROUP_SIZE = 2;
   const MAX_GROUP_SIZE = 8;
 
-  // ===== DATA PELAJAR (sama dengan index.html) =====
+  // ===== SENARAI PELAJAR (WAJIB SAMA dengan index.html) =====
   const ALL_STUDENTS = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
@@ -962,4 +871,11 @@
     { matrix: "18DIT26F1067", name: "MUHAMMAD IRFAN HARITH BIN MOHD HERMAN" },
     { matrix: "18DIT26F1078", name: "RAJA MUHAMMAD DANIEL HARRIS BIN RAJA MAZRUL KAMARULZAMAN" },
     { matrix: "18DIT26F1084", name: "KAVIPRAKAASH A/L SHANKAR" },
-    { matrix: "18DIT26F1089",
+    { matrix: "18DIT26F1089", name: "SYED MUNIF ZAFRAN BIN SYED NUZUL FADZLI" },
+    { matrix: "18DIT26F1091", name: "NUR INSYIRAH BINTI MOHD IZUDDIN" },
+    { matrix: "18DIT26F1095", name: "YEOH CHENG YI" },
+    { matrix: "18DIT26F1097", name: "SITI FATIMAH DAYANA BINTI SAAD" },
+    { matrix: "18DIT26F1102", name: "NURIN SYAFIAH BINTI NORDIN" },
+    { matrix: "18DIT26F1103", name: "MUHAMAD HARIES BIN MUHAMAD HAFIZ" },
+    { matrix: "18DIT26F1114", name: "NUR AISYAH ARMA BINTI ARFAH" },
+    { matrix: "18DIT26F1115", name: "
