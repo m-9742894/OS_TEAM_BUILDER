@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pilih Nama — Register Group</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --accent: #ec4899;
+    --bg-1: #0f172a;
+    --bg-2: #1e293b;
+    --card: rgba(255, 255, 255, 0.06);
+    --card-hover: rgba(255, 255, 255, 0.12);
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: rgba(255, 255, 255, 0.1);
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    color: var(--text);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+  }
+  body::before {
+    width: 400px; height: 400px;
+    background: var(--primary);
+    top: -100px; left: -100px;
+  }
+  body::after {
+    width: 400px; height: 400px;
+    background: var(--accent);
+    bottom: -100px; right: -100px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 120px;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+
+  header h1 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #a5b4fc, #f0abfc, #a5b4fc);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shine 4s linear infinite;
+    margin-bottom: 8px;
+  }
+
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+
+  header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  /* ===== Search + Auto-suggest ===== */
+  .search-wrapper {
+    position: relative;
+    width: 100%;
+    z-index: 20;
+  }
+
+  .search-box {
+    position: relative;
+    width: 100%;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .search-box input:focus {
+    border-color: var(--primary);
+    background: var(--card-hover);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  }
+
+  .search-box input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .search-box .icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+  }
+
+  .search-box .clear-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+  .search-box .clear-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fff;
+  }
+  .search-box .clear-btn.show { display: flex; }
+
+  /* Auto-suggest dropdown */
+  .suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    max-height: 340px;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 100;
+    padding: 8px;
+  }
+
+  .suggestions.show { display: block; }
+
+  .suggestion-item {
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.15s ease;
+  }
+
+  .suggestion-item:hover,
+  .suggestion-item.active {
+    background: rgba(99, 102, 241, 0.25);
+  }
+
+  .suggestion-item .s-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .suggestion-item .s-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .suggestion-item .s-matrix {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .suggestion-item .s-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .suggestion-item .s-name mark {
+    background: transparent;
+    color: #f0abfc;
+    font-weight: 800;
+  }
+
+  .suggestion-item .s-status {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .suggestion-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* ===== List ===== */
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+    transform: scaleY(0);
+    transition: transform 0.25s ease;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.5);
+  }
+
+  .card.selected {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2));
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25), 0 8px 30px rgba(99, 102, 241, 0.3);
+  }
+
+  .card.selected::before { transform: scaleY(1); }
+
+  .card.taken {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .card.taken:hover {
+    transform: none;
+    background: var(--card);
+    border-color: var(--border);
+  }
+
+  .card .num {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  }
+
+  .card.taken .num {
+    background: rgba(148, 163, 184, 0.3);
+    box-shadow: none;
+  }
+
+  .card .info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card .matrix {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .card .name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card .check {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    font-size: 0.8rem;
+    color: transparent;
+  }
+
+  .card.selected .check {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    transform: scale(1.1);
+  }
+
+  .card .taken-badge {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== Enter Button ===== */
+  .enter-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.9) 40%);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .enter-btn {
+    width: 100%;
+    max-width: 900px;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .enter-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(99, 102, 241, 0.7);
+  }
+
+  .enter-btn:active:not(:disabled) { transform: translateY(0); }
+
+  .enter-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .container { gap: 16px; padding-bottom: 110px; }
+    header { padding: 20px 10px 6px; }
+    .card { padding: 14px 16px; gap: 12px; border-radius: 14px; }
+    .card .num { width: 36px; height: 36px; font-size: 0.8rem; border-radius: 10px; }
+    .card .name { font-size: 0.92rem; }
+    .card .matrix { font-size: 0.7rem; }
+    .search-box input { padding: 14px 44px 14px 44px; font-size: 0.95rem; }
+    .enter-btn { padding: 15px 20px; font-size: 1rem; }
+    .suggestions { max-height: 260px; }
+  }
+
+  @media (max-width: 380px) {
+    .card .name { font-size: 0.85rem; }
+    .card .matrix { font-size: 0.65rem; }
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Pilih Nama Anda</h1>
+      <p>Sila pilih nama untuk mendaftar group</p>
+    </header>
+
+    <div class="search-wrapper">
+      <div class="search-box">
+        <span class="icon">🔍</span>
+        <input
+          type="text"
+          id="search"
+          placeholder="Taip nama atau nombor matriks..."
+          autocomplete="off"
+        />
+        <button class="clear-btn" id="clearBtn" title="Clear">✕</button>
+      </div>
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+
+    <div class="list" id="list">
+      <div class="loading">
+        <div class="spinner"></div>
+        <span>Memuatkan senarai pelajar...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="enter-bar">
+    <button class="enter-btn" id="enterBtn" disabled>ENTER →</button>
+  </div>
+
+<script type="module">
+  // ===== Firebase SDK =====
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    setDoc,
+    updateDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwQY0qtOX4pzwIV3_csamxx1h6iGLSf5M",
+    authDomain: "osteambuilder.firebaseapp.com",
+    projectId: "osteambuilder",
+    storageBucket: "osteambuilder.firebasestorage.app",
+    messagingSenderId: "325636555428",
+    appId: "1:325636555428:web:e4ba419da7a8fcc8fb1c31",
+    measurementId: "G-THSWWQEZ9T"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ===== Data asal (untuk seed ke Firestore) =====
+  const studentsData = [
+    { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
+    { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
+    { matrix: "18DIT26F1011", name: "SOMROOT A/L I JOM" },
+    { matrix: "18DIT26F1012", name: "KHOR JINYI" },
+    { matrix: "18DIT26F1017", name: "TEOH QIAN HOOI" },
+    { matrix: "18DIT26F1024", name: "NURATHIRAH BADRIAH BINTI MOHD REDHUAN" },
+    { matrix: "18DIT26F1035", name: "KAIYISAH ADNIN BINTI ZUNNASRI" },
+    { matrix: "18DIT26F1047", name: "NURUL HIDAYAH SYAZWANI BINTI MOHD SAYUTI" },
+    { matrix: "18DIT26F1054", name: "NUR DEENA FARZANA BINTI ZAMRI" },
+    { matrix: "18DIT26F1067", name: "MUHAMMAD IRFAN HARITH BIN MOHD HERMAN" },
+    { matrix: "18DIT26F1078", name: "RAJA MUHAMMAD DANIEL HARRIS BIN RAJA MAZRUL KAMARULZAMAN" },
+    { matrix: "18DIT26F1084", name: "KAVIPRAKAASH A/L SHANKAR" },
+    { matrix: "18DIT26F1089", name: "SYED MUNIF ZAFRAN BIN SYED NUZUL FADZLI" },
+    { matrix: "18DIT26F1091", name: "NUR INSYIRAH BINTI MOHD IZUDDIN" },
+    { matrix: "18DIT26F1095", name: "YEOH CHENG YI" },
+    { matrix: "18DIT26F1097", name: "SITI FATIMAH DAYANA BINTI SAAD" },
+    { matrix: "18DIT26F1102", name: "NURIN SYAFIAH BINTI NORDIN" },
+    { matrix: "18DIT26F1103", name: "MUHAMAD HARIES BIN MUHAMAD HAFIZ" },
+    { matrix: "18DIT26F1114", name: "NUR AISYAH ARMA BINTI ARFAH" },
+    { matrix: "18DIT26F1115", name: "NUR FARAH FATIMAH BINTI ASHRUL" },
+    { matrix: "18DIT26F1121", name: "NHAM FON A/P PRACHOP" },
+    { matrix: "18DIT26F1122", name: "KATIRRAVAN A/L GANTHISPARAN" },
+    { matrix: "18DIT26F1127", name: "ONG SIM LOK" },
+    { matrix: "18DIT26F1128", name: "MUHAMMAD IKQRAM ZULFIQQAR BIN IDRIS" },
+    { matrix: "18DIT26F1132", name: "WAN AIMARR IQRAM BIN WAN NOORIZUANDI" },
+    { matrix: "18DIT26F1134", name: "ATHIRAH RAUQAH BINTI ROSLI" },
+    { matrix: "18DIT26F1144", name: "NURUL ZAHIRAH BINTI ISHAK" },
+    { matrix: "18DIT26F1152", name: "MUHAMMAD THAQIF ZAFRAN BIN RAHIM" },
+    { matrix: "18DIT26F1159", name: "NUR ALEYA QHAISARA BINTI MOHD ALI" },
+    { matrix: "18DIT26F1176", name: "ASRI BIN MUHD ABDUH" },
+    { matrix: "18DIT26F1183", name: "NURUL SYAFIQAH AINA BINTI MOHAMAD ANUAR" },
+    { matrix: "18DIT26F1192", name: "NUR NAJWA BALQIS BINTI MOHD ASMANIZAM" },
+    { matrix: "18DIT26F1198", name: "IZZAM HAKIMI BIN NOR AZELIN" }
+  ];
+
+  // ===== DOM =====
+  const listEl = document.getElementById('list');
+  const searchEl = document.getElementById('search');
+  const clearBtn = document.getElementById('clearBtn');
+  const suggestionsEl = document.getElementById('suggestions');
+  const enterBtn = document.getElementById('enterBtn');
+
+  let students = [];        // dari Firestore
+  let selectedId = null;    // docId yang dipilih
+  let selectedStudent = null;
+  let activeSuggestIndex = -1;
+  let currentSuggestions = [];
+
+  // ===== 1. SEED DATA (auto upload kalau collection kosong) =====
+  async function seedIfEmpty() {
+    const snap = await getDocs(collection(db, "students"));
+    if (snap.empty) {
+      console.log("🔥 Seeding data ke Firestore...");
+      const promises = studentsData.map((s, i) => {
+        const docId = s.matrix; // guna matrix sebagai docId (unik)
+        return setDoc(doc(db, "students", docId), {
+          matrix: s.matrix,
+          name: s.name,
+          order: i + 1,
+          selected: false,
+          groupId: null,
+          createdAt: serverTimestamp()
+        });
+      });
+      await Promise.all(promises);
+      console.log("✅ Seed selesai!");
+    }
+  }
+
+  // ===== 2. REAL-TIME LISTENER =====
+  function listenStudents() {
+    const q = query(collection(db, "students"), orderBy("order", "asc"));
+    onSnapshot(q, (snap) => {
+      students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderList(searchEl.value);
+    }, (err) => {
+      console.error("Firestore error:", err);
+      listEl.innerHTML = `<div class="empty">⚠️ Gagal sambung Firestore.<br>Pastikan Firestore Rules allow read.</div>`;
+    });
+  }
+
+  // ===== 3. HIGHLIGHT MATCH =====
+  function highlight(text, q) {
+    if (!q) return text;
+    const idx = text.toLowerCase().indexOf(q.toLowerCase());
+    if (idx === -1) return text;
+    return text.slice(0, idx) +
+      `<mark>${text.slice(idx, idx + q.length)}</mark>` +
+      text.slice(idx + q.length);
+  }
+
+  // ===== 4. RENDER LIST =====
+  function renderList(filter = "") {
+    const q = filter.trim().toLowerCase();
+    listEl.innerHTML = "";
+
+    const filtered = students.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.matrix.toLowerCase().includes(q)
+    );
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div class="empty">😕 Tiada nama dijumpai</div>`;
+      return;
+    }
+
+    filtered.forEach((s) => {
+      const card = document.createElement('div');
+      const isTaken = s.selected === true;
+      card.className = 'card'
+        + (s.id === selectedId ? ' selected' : '')
+        + (isTaken ? ' taken' : '');
+      card.dataset.id = s.id;
+
+      card.innerHTML = `
+        <div class="num">${s.order}</div>
+        <div class="info">
+          <div class="matrix">${highlight(s.matrix, q)}</div>
+          <div class="name">${highlight(s.name, q)}</div>
+        </div>
+        ${isTaken ? '<div class="taken-badge">TAKEN</div>' : '<div class="check">✓</div>'}
+      `;
+
+      if (!isTaken) {
+        card.addEventListener('click', () => selectStudent(s));
+      }
+      listEl.appendChild(card);
+    });
+  }
+
+  // ===== 5. SELECT =====
+  function selectStudent(s) {
+    selectedId = s.id;
+    selectedStudent = s;
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.toggle('selected', c.dataset.id === s.id);
+    });
+    enterBtn.disabled = false;
+    enterBtn.textContent = `ENTER — ${s.name.split(' ')[0]} →`;
+
+    // update search input + clear suggest
+    searchEl.value = `${s.matrix} — ${s.name}`;
+    clearBtn.classList.add('show');
+    hideSuggestions();
+  }
+
+  // ===== 6. AUTO-SUGGEST =====
+  function showSuggestions(q) {
+    q = q.trim().toLowerCase();
+    if (!q) return hideSuggestions();
+
+    currentSuggestions = students
+      .filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        s.matrix.toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+
+    if (currentSuggestions.length === 0) {
+      suggestionsEl.innerHTML = `<div class="suggestion-empty">😕 Tiada padanan</div>`;
+      suggestionsEl.classList.add('show');
+      return;
+    }
+
+    suggestionsEl.innerHTML = currentSuggestions.map((s, i) => `
+      <div class="suggestion-item ${i === activeSuggestIndex ? 'active' : ''}" data-idx="${i}">
+        <div class="s-num">${s.order}</div>
+        <div class="s-info">
+          <div class="s-matrix">${highlight(s.matrix, q)}</div>
+          <div class="s-name">${highlight(s.name, q)}</div>
+        </div>
+        ${s.selected ? '<div class="s-status">TAKEN</div>' : ''}
+      </div>
+    `).join('');
+
+    suggestionsEl.querySelectorAll('.suggestion-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const st = currentSuggestions[Number(el.dataset.idx)];
+        if (st.selected) return;
+        selectStudent(st);
+      });
+    });
+
+    suggestionsEl.classList.add('show');
+  }
+
+  function hideSuggestions() {
+    suggestionsEl.classList.remove('show');
+    activeSuggestIndex = -1;
+  }
+
+  // ===== 7. SEARCH EVENTS =====
+  searchEl.addEventListener('input', (e) => {
+    const val = e.target.value;
+    clearBtn.classList.toggle('show', val.length > 0);
+    renderList(val);
+    showSuggestions(val);
+  });
+
+  searchEl.addEventListener('focus', () => {
+    if (searchEl.value.trim()) showSuggestions(searchEl.value);
+  });
+
+  searchEl.addEventListener('keydown', (e) => {
+    if (!suggestionsEl.classList.contains('show')) return;
+    const items = currentSuggestions;
+    if (items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeSuggestIndex = Math.min(activeSuggestIndex + 1, items.length - 1);
+      updateActiveSuggest();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeSuggestIndex = Math.max(activeSuggestIndex - 1, 0);
+      updateActiveSuggest();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeSuggestIndex >= 0 && items[activeSuggestIndex]) {
+        const st = items[activeSuggestIndex];
+        if (!st.selected) selectStudent(st);
+      }
+    } else if (e.key === 'Escape') {
+      hideSuggestions();
+    }
+  });
+
+  function updateActiveSuggest() {
+    suggestionsEl.querySelectorAll('.suggestion-item').forEach((el, i) => {
+      el.classList.toggle('active', i === activeSuggestIndex);
+    });
+  }
+
+  clearBtn.addEventListener('click', () => {
+    searchEl.value = '';
+    clearBtn.classList.remove('show');
+    renderList('');
+    hideSuggestions();
+    searchEl.focus();
+  });
+
+  // Tutup suggest bila klik luar
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrapper')) hideSuggestions();
+  });
+
+  // ===== 8. ENTER BUTTON =====
+  enterBtn.addEventListener('click', async () => {
+    if (!selectedStudent) return;
+
+    enterBtn.disabled = true;
+    enterBtn.textContent = 'Menyimpan...';
+
+    try {
+      // Tanda pelajar ni dah pilih (elak orang lain pilih)
+      await updateDoc(doc(db, "students", selectedStudent.id), {
+        selected: true,
+        selectedAt: serverTimestamp()
+      });
+
+      // Simpan info ke localStorage untuk page seterusnya
+      localStorage.setItem('selectedStudent', JSON.stringify({
+        id: selectedStudent.id,
+        matrix: selectedStudent.matrix,
+        name: selectedStudent.name
+      }));
+
+      // Redirect ke page seterusnya
+      window.location.href = 'group.html';
+
+    } catch (err) {
+      console.error(err);
+      alert('❌ Gagal simpan. Cuba lagi.');
+      enterBtn.disabled = false;
+      enterBtn.textContent = `ENTER — ${selectedStudent.name.split(' ')[0]} →`;
+    }
+  });
+
+  // ===== INIT =====
+  (async () => {
+    try {
+      await seedIfEmpty();
+      listenStudents();
+    } catch (err) {
+      console.error(err);
+      listEl.innerHTML = `<div class="empty">⚠️ Gagal sambung Firestore.<br>${err.message}</div>`;
+    }
+  })();
+</script>
+</body>
+</html>
