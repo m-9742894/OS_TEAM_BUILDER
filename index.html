@@ -69,6 +69,7 @@
     padding-bottom: 120px;
   }
 
+  /* ===== Header ===== */
   header {
     text-align: center;
     padding: 30px 20px 10px;
@@ -109,7 +110,7 @@
 
   .search-box input {
     width: 100%;
-    padding: 16px 20px 16px 50px;
+    padding: 16px 48px 16px 50px;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -154,7 +155,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
   }
   .search-box .clear-btn:hover {
@@ -237,16 +238,6 @@
     font-weight: 800;
   }
 
-  .suggestion-item .s-status {
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: rgba(239, 68, 68, 0.2);
-    color: #fca5a5;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
   .suggestion-empty {
     padding: 20px;
     text-align: center;
@@ -300,16 +291,6 @@
 
   .card.selected::before { transform: scaleY(1); }
 
-  .card.taken {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
-  .card.taken:hover {
-    transform: none;
-    background: var(--card);
-    border-color: var(--border);
-  }
-
   .card .num {
     flex-shrink: 0;
     width: 40px;
@@ -323,11 +304,6 @@
     font-size: 0.9rem;
     color: #fff;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-  }
-
-  .card.taken .num {
-    background: rgba(148, 163, 184, 0.3);
-    box-shadow: none;
   }
 
   .card .info {
@@ -373,41 +349,12 @@
     transform: scale(1.1);
   }
 
-  .card .taken-badge {
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: rgba(239, 68, 68, 0.2);
-    color: #fca5a5;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
   .empty {
     text-align: center;
     padding: 40px 20px;
     color: var(--text-muted);
     font-size: 0.95rem;
   }
-
-  /* Loading */
-  .loading {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid rgba(99, 102, 241, 0.2);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ===== Enter Button ===== */
   .enter-bar {
@@ -456,6 +403,7 @@
     box-shadow: none;
   }
 
+  /* ===== Responsive ===== */
   @media (max-width: 600px) {
     body { padding: 12px; }
     .container { gap: 16px; padding-bottom: 110px; }
@@ -504,49 +452,16 @@
       <div class="suggestions" id="suggestions"></div>
     </div>
 
-    <div class="list" id="list">
-      <div class="loading">
-        <div class="spinner"></div>
-        <span>Memuatkan senarai pelajar...</span>
-      </div>
-    </div>
+    <div class="list" id="list"></div>
   </div>
 
   <div class="enter-bar">
     <button class="enter-btn" id="enterBtn" disabled>ENTER →</button>
   </div>
 
-<script type="module">
-  // ===== Firebase SDK =====
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    getDocs,
-    doc,
-    setDoc,
-    updateDoc,
-    onSnapshot,
-    query,
-    orderBy,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAwQY0qtOX4pzwIV3_csamxx1h6iGLSf5M",
-    authDomain: "osteambuilder.firebaseapp.com",
-    projectId: "osteambuilder",
-    storageBucket: "osteambuilder.firebasestorage.app",
-    messagingSenderId: "325636555428",
-    appId: "1:325636555428:web:e4ba419da7a8fcc8fb1c31",
-    measurementId: "G-THSWWQEZ9T"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // ===== Data asal (untuk seed ke Firestore) =====
-  const studentsData = [
+<script>
+  // ===== Senarai pelajar (data dalam coding) =====
+  const students = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
     { matrix: "18DIT26F1011", name: "SOMROOT A/L I JOM" },
@@ -589,46 +504,11 @@
   const suggestionsEl = document.getElementById('suggestions');
   const enterBtn = document.getElementById('enterBtn');
 
-  let students = [];        // dari Firestore
-  let selectedId = null;    // docId yang dipilih
-  let selectedStudent = null;
+  let selectedIndex = -1;
   let activeSuggestIndex = -1;
   let currentSuggestions = [];
 
-  // ===== 1. SEED DATA (auto upload kalau collection kosong) =====
-  async function seedIfEmpty() {
-    const snap = await getDocs(collection(db, "students"));
-    if (snap.empty) {
-      console.log("🔥 Seeding data ke Firestore...");
-      const promises = studentsData.map((s, i) => {
-        const docId = s.matrix; // guna matrix sebagai docId (unik)
-        return setDoc(doc(db, "students", docId), {
-          matrix: s.matrix,
-          name: s.name,
-          order: i + 1,
-          selected: false,
-          groupId: null,
-          createdAt: serverTimestamp()
-        });
-      });
-      await Promise.all(promises);
-      console.log("✅ Seed selesai!");
-    }
-  }
-
-  // ===== 2. REAL-TIME LISTENER =====
-  function listenStudents() {
-    const q = query(collection(db, "students"), orderBy("order", "asc"));
-    onSnapshot(q, (snap) => {
-      students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderList(searchEl.value);
-    }, (err) => {
-      console.error("Firestore error:", err);
-      listEl.innerHTML = `<div class="empty">⚠️ Gagal sambung Firestore.<br>Pastikan Firestore Rules allow read.</div>`;
-    });
-  }
-
-  // ===== 3. HIGHLIGHT MATCH =====
+  // ===== Highlight match =====
   function highlight(text, q) {
     if (!q) return text;
     const idx = text.toLowerCase().indexOf(q.toLowerCase());
@@ -638,15 +518,17 @@
       text.slice(idx + q.length);
   }
 
-  // ===== 4. RENDER LIST =====
+  // ===== Render List =====
   function renderList(filter = "") {
     const q = filter.trim().toLowerCase();
     listEl.innerHTML = "";
 
-    const filtered = students.filter(s =>
-      s.name.toLowerCase().includes(q) ||
-      s.matrix.toLowerCase().includes(q)
-    );
+    const filtered = students
+      .map((s, i) => ({ ...s, originalIndex: i }))
+      .filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        s.matrix.toLowerCase().includes(q)
+      );
 
     if (filtered.length === 0) {
       listEl.innerHTML = `<div class="empty">😕 Tiada nama dijumpai</div>`;
@@ -655,50 +537,44 @@
 
     filtered.forEach((s) => {
       const card = document.createElement('div');
-      const isTaken = s.selected === true;
-      card.className = 'card'
-        + (s.id === selectedId ? ' selected' : '')
-        + (isTaken ? ' taken' : '');
-      card.dataset.id = s.id;
+      card.className = 'card' + (s.originalIndex === selectedIndex ? ' selected' : '');
+      card.dataset.index = s.originalIndex;
 
       card.innerHTML = `
-        <div class="num">${s.order}</div>
+        <div class="num">${s.originalIndex + 1}</div>
         <div class="info">
           <div class="matrix">${highlight(s.matrix, q)}</div>
           <div class="name">${highlight(s.name, q)}</div>
         </div>
-        ${isTaken ? '<div class="taken-badge">TAKEN</div>' : '<div class="check">✓</div>'}
+        <div class="check">✓</div>
       `;
 
-      if (!isTaken) {
-        card.addEventListener('click', () => selectStudent(s));
-      }
+      card.addEventListener('click', () => selectStudent(s.originalIndex));
       listEl.appendChild(card);
     });
   }
 
-  // ===== 5. SELECT =====
-  function selectStudent(s) {
-    selectedId = s.id;
-    selectedStudent = s;
+  // ===== Select Student =====
+  function selectStudent(index) {
+    selectedIndex = index;
     document.querySelectorAll('.card').forEach(c => {
-      c.classList.toggle('selected', c.dataset.id === s.id);
+      c.classList.toggle('selected', Number(c.dataset.index) === index);
     });
     enterBtn.disabled = false;
-    enterBtn.textContent = `ENTER — ${s.name.split(' ')[0]} →`;
+    enterBtn.textContent = `ENTER — ${students[index].name.split(' ')[0]} →`;
 
-    // update search input + clear suggest
-    searchEl.value = `${s.matrix} — ${s.name}`;
+    searchEl.value = `${students[index].matrix} — ${students[index].name}`;
     clearBtn.classList.add('show');
     hideSuggestions();
   }
 
-  // ===== 6. AUTO-SUGGEST =====
+  // ===== Auto-suggest =====
   function showSuggestions(q) {
     q = q.trim().toLowerCase();
     if (!q) return hideSuggestions();
 
     currentSuggestions = students
+      .map((s, i) => ({ ...s, originalIndex: i }))
       .filter(s =>
         s.name.toLowerCase().includes(q) ||
         s.matrix.toLowerCase().includes(q)
@@ -713,20 +589,18 @@
 
     suggestionsEl.innerHTML = currentSuggestions.map((s, i) => `
       <div class="suggestion-item ${i === activeSuggestIndex ? 'active' : ''}" data-idx="${i}">
-        <div class="s-num">${s.order}</div>
+        <div class="s-num">${s.originalIndex + 1}</div>
         <div class="s-info">
           <div class="s-matrix">${highlight(s.matrix, q)}</div>
           <div class="s-name">${highlight(s.name, q)}</div>
         </div>
-        ${s.selected ? '<div class="s-status">TAKEN</div>' : ''}
       </div>
     `).join('');
 
     suggestionsEl.querySelectorAll('.suggestion-item').forEach(el => {
       el.addEventListener('click', () => {
-        const st = currentSuggestions[Number(el.dataset.idx)];
-        if (st.selected) return;
-        selectStudent(st);
+        const s = currentSuggestions[Number(el.dataset.idx)];
+        selectStudent(s.originalIndex);
       });
     });
 
@@ -738,7 +612,13 @@
     activeSuggestIndex = -1;
   }
 
-  // ===== 7. SEARCH EVENTS =====
+  function updateActiveSuggest() {
+    suggestionsEl.querySelectorAll('.suggestion-item').forEach((el, i) => {
+      el.classList.toggle('active', i === activeSuggestIndex);
+    });
+  }
+
+  // ===== Search Events =====
   searchEl.addEventListener('input', (e) => {
     const val = e.target.value;
     clearBtn.classList.toggle('show', val.length > 0);
@@ -747,7 +627,9 @@
   });
 
   searchEl.addEventListener('focus', () => {
-    if (searchEl.value.trim()) showSuggestions(searchEl.value);
+    if (searchEl.value.trim() && selectedIndex === -1) {
+      showSuggestions(searchEl.value);
+    }
   });
 
   searchEl.addEventListener('keydown', (e) => {
@@ -766,19 +648,12 @@
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (activeSuggestIndex >= 0 && items[activeSuggestIndex]) {
-        const st = items[activeSuggestIndex];
-        if (!st.selected) selectStudent(st);
+        selectStudent(items[activeSuggestIndex].originalIndex);
       }
     } else if (e.key === 'Escape') {
       hideSuggestions();
     }
   });
-
-  function updateActiveSuggest() {
-    suggestionsEl.querySelectorAll('.suggestion-item').forEach((el, i) => {
-      el.classList.toggle('active', i === activeSuggestIndex);
-    });
-  }
 
   clearBtn.addEventListener('click', () => {
     searchEl.value = '';
@@ -793,48 +668,16 @@
     if (!e.target.closest('.search-wrapper')) hideSuggestions();
   });
 
-  // ===== 8. ENTER BUTTON =====
-  enterBtn.addEventListener('click', async () => {
-    if (!selectedStudent) return;
-
-    enterBtn.disabled = true;
-    enterBtn.textContent = 'Menyimpan...';
-
-    try {
-      // Tanda pelajar ni dah pilih (elak orang lain pilih)
-      await updateDoc(doc(db, "students", selectedStudent.id), {
-        selected: true,
-        selectedAt: serverTimestamp()
-      });
-
-      // Simpan info ke localStorage untuk page seterusnya
-      localStorage.setItem('selectedStudent', JSON.stringify({
-        id: selectedStudent.id,
-        matrix: selectedStudent.matrix,
-        name: selectedStudent.name
-      }));
-
-      // Redirect ke page seterusnya
-      window.location.href = 'group.html';
-
-    } catch (err) {
-      console.error(err);
-      alert('❌ Gagal simpan. Cuba lagi.');
-      enterBtn.disabled = false;
-      enterBtn.textContent = `ENTER — ${selectedStudent.name.split(' ')[0]} →`;
-    }
+  // ===== ENTER Button =====
+  enterBtn.addEventListener('click', () => {
+    if (selectedIndex === -1) return;
+    const student = students[selectedIndex];
+    localStorage.setItem('selectedStudent', JSON.stringify(student));
+    window.location.href = 'group.html';
   });
 
   // ===== INIT =====
-  (async () => {
-    try {
-      await seedIfEmpty();
-      listenStudents();
-    } catch (err) {
-      console.error(err);
-      listEl.innerHTML = `<div class="empty">⚠️ Gagal sambung Firestore.<br>${err.message}</div>`;
-    }
-  })();
+  renderList();
 </script>
 </body>
 </html>
