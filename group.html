@@ -538,46 +538,32 @@
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
   }
 
-  /* Fixed size display */
-  .fixed-size-display {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 18px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.1));
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 14px;
-    margin-bottom: 18px;
+  .size-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
   }
-  .fixed-size-display .icon {
-    width: 48px; height: 48px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-  }
-  .fixed-size-display .info { flex: 1; min-width: 0; }
-  .fixed-size-display .title {
+  .size-btn {
+    padding: 12px 0;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
     font-size: 0.95rem;
     font-weight: 700;
-    margin-bottom: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
-  .fixed-size-display .desc {
-    font-size: 0.78rem;
-    color: var(--text-muted);
+  .size-btn:hover {
+    background: var(--card-hover);
+    border-color: rgba(99, 102, 241, 0.5);
   }
-  .fixed-size-display .count {
-    font-size: 1.4rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #a5b4fc, #f0abfc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    flex-shrink: 0;
+  .size-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+    transform: scale(1.05);
   }
 
   .modal-actions {
@@ -747,8 +733,6 @@
     .member-count { font-size: 0.75rem; padding: 5px 10px; }
     .join-btn { padding: 7px 14px; font-size: 0.78rem; }
     .modal { padding: 20px; border-radius: 18px; }
-    .fixed-size-display { padding: 14px; gap: 12px; }
-    .fixed-size-display .icon { width: 42px; height: 42px; font-size: 1.3rem; border-radius: 12px; }
   }
   @media (max-width: 380px) {
     .profile-info .name { font-size: 0.95rem; }
@@ -827,7 +811,7 @@
       <div class="modal-header">
         <div>
           <h3>➕ Cipta Group Baru</h3>
-          <p>Group ini akan ada 5 ahli</p>
+          <p>Tetapkan bilangan ahli (2 - 5 orang)</p>
         </div>
         <button class="modal-close" id="closeCreateModal">✕</button>
       </div>
@@ -842,14 +826,15 @@
         <div class="hint">Kosongkan untuk auto-generate nama</div>
       </div>
 
-      <!-- FIXED SIZE DISPLAY -->
-      <div class="fixed-size-display">
-        <div class="icon">👥</div>
-        <div class="info">
-          <div class="title">Bilangan Ahli</div>
-          <div class="desc">Setiap group mesti 5 orang</div>
+      <div class="form-group">
+        <label>Bilangan Ahli (Max 5)</label>
+        <div class="size-selector" id="sizeSelector">
+          <button class="size-btn" data-size="2">2</button>
+          <button class="size-btn active" data-size="3">3</button>
+          <button class="size-btn" data-size="4">4</button>
+          <button class="size-btn" data-size="5">5</button>
         </div>
-        <div class="count">5</div>
+        <div class="hint">Min 2, Max 5 orang (termasuk anda)</div>
       </div>
 
       <div class="modal-actions">
@@ -921,9 +906,10 @@
 
   // ===== KONFIG =====
   const MAX_GROUPS_TOTAL = 8;      // max group total dalam sistem
-  const GROUP_SIZE = 5;            // FIXED: setiap group 5 orang
+  const MIN_GROUP_SIZE = 2;        // min ahli
+  const MAX_GROUP_SIZE = 5;        // max ahli (5 SAHAJA)
 
-  // ===== DATA PELAJAR (WAJIB SAMA dengan index.html) =====
+  // ===== DATA PELAJAR =====
   const ALL_STUDENTS = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
@@ -980,6 +966,7 @@
   const cancelCreate = document.getElementById('cancelCreate');
   const confirmCreate = document.getElementById('confirmCreate');
   const groupNameInput = document.getElementById('groupNameInput');
+  const sizeSelector = document.getElementById('sizeSelector');
 
   const detailModal = document.getElementById('detailModal');
   const closeDetailModal = document.getElementById('closeDetailModal');
@@ -995,6 +982,7 @@
   // ===== STATE =====
   let currentStudent = null;
   let groups = [];
+  let selectedSize = 3;
   let unsubGroups = null;
 
   // ===== HELPERS =====
@@ -1228,7 +1216,7 @@
         if (members.includes(currentStudent.matrix)) {
           throw new Error("Anda dah join group ini");
         }
-        if (members.length >= GROUP_SIZE) {
+        if (members.length >= data.size || members.length >= MAX_GROUP_SIZE) {
           throw new Error("Group sudah penuh");
         }
 
@@ -1256,12 +1244,20 @@
       return;
     }
     groupNameInput.value = '';
+    selectedSize = 3;
+    updateSizeButtons();
     createModal.classList.add('show');
     setTimeout(() => groupNameInput.focus(), 100);
   }
 
   function closeCreateModalFn() {
     createModal.classList.remove('show');
+  }
+
+  function updateSizeButtons() {
+    sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+      btn.classList.toggle('active', Number(btn.dataset.size) === selectedSize);
+    });
   }
 
   async function createGroup() {
@@ -1271,6 +1267,10 @@
     }
     if (isStudentInAnyGroup(currentStudent.matrix)) {
       showToast('❌ Anda sudah join group', 'error');
+      return;
+    }
+    if (selectedSize > MAX_GROUP_SIZE || selectedSize < MIN_GROUP_SIZE) {
+      showToast(`❌ Saiz mesti antara ${MIN_GROUP_SIZE} - ${MAX_GROUP_SIZE} orang`, 'error');
       return;
     }
 
@@ -1294,7 +1294,7 @@
         name: name,
         creator: currentStudent.matrix,
         creatorName: currentStudent.name,
-        size: GROUP_SIZE,                        // ← FIXED 5
+        size: selectedSize,        // 2, 3, 4, atau 5
         members: [currentStudent.matrix],
         createdAt: serverTimestamp()
       });
@@ -1403,6 +1403,13 @@
   closeCreateModal.addEventListener('click', closeCreateModalFn);
   cancelCreate.addEventListener('click', closeCreateModalFn);
   confirmCreate.addEventListener('click', createGroup);
+
+  sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedSize = Number(btn.dataset.size);
+      updateSizeButtons();
+    });
+  });
 
   groupNameInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') createGroup();
