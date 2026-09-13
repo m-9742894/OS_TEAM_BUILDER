@@ -571,7 +571,7 @@
     gap: 10px;
     margin-top: 22px;
   }
-  .btn-secondary, .btn-primary {
+  .btn-secondary, .btn-primary, .btn-danger {
     flex: 1;
     padding: 14px;
     border-radius: 12px;
@@ -600,6 +600,29 @@
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
+  }
+  .btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
+  }
+  .btn-danger:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.7);
+  }
+  .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
+  }
+  .btn-warning:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.7);
   }
 
   .members-list {
@@ -669,6 +692,29 @@
     flex-shrink: 0;
   }
 
+  /* Remove member button */
+  .remove-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .remove-btn:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fff;
+    transform: scale(1.05);
+  }
+  .remove-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
   .info-box {
     background: rgba(99, 102, 241, 0.1);
     border: 1px solid rgba(99, 102, 241, 0.2);
@@ -685,6 +731,11 @@
     background: rgba(245, 158, 11, 0.1);
     border-color: rgba(245, 158, 11, 0.3);
     color: #fcd34d;
+  }
+  .info-box.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
   }
 
   /* Toast */
@@ -733,6 +784,7 @@
     .member-count { font-size: 0.75rem; padding: 5px 10px; }
     .join-btn { padding: 7px 14px; font-size: 0.78rem; }
     .modal { padding: 20px; border-radius: 18px; }
+    .remove-btn { font-size: 0.68rem; padding: 5px 10px; }
   }
   @media (max-width: 380px) {
     .profile-info .name { font-size: 0.95rem; }
@@ -905,9 +957,9 @@
   const db = getFirestore(app);
 
   // ===== KONFIG =====
-  const MAX_GROUPS_TOTAL = 8;      // max group total dalam sistem
-  const MIN_GROUP_SIZE = 2;        // min ahli
-  const MAX_GROUP_SIZE = 5;        // max ahli (5 SAHAJA)
+  const MAX_GROUPS_TOTAL = 8;
+  const MIN_GROUP_SIZE = 2;
+  const MAX_GROUP_SIZE = 5;
 
   // ===== DATA PELAJAR =====
   const ALL_STUDENTS = [
@@ -1233,6 +1285,109 @@
     }
   }
 
+  // ===== LEAVE GROUP (ahli keluar sendiri) =====
+  async function leaveGroup(groupId) {
+    const g = groups.find(x => x.id === groupId);
+    if (!g) return;
+
+    const isCreator = g.creator === currentStudent.matrix;
+    if (isCreator) {
+      showToast('❌ Pencipta kena delete group (bukan leave)', 'error');
+      return;
+    }
+
+    if (!confirm(`Keluar dari ${g.name}? Anda boleh join group lain lepas ni.`)) return;
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const groupRef = doc(db, "groups", groupId);
+        const groupSnap = await transaction.get(groupRef);
+        if (!groupSnap.exists()) throw new Error("Group tak wujud");
+
+        const data = groupSnap.data();
+        const members = data.members || [];
+
+        if (!members.includes(currentStudent.matrix)) {
+          throw new Error("Anda bukan ahli group ini");
+        }
+
+        const newMembers = members.filter(m => m !== currentStudent.matrix);
+        transaction.update(groupRef, { members: newMembers });
+      });
+
+      showToast(`✅ Berjaya keluar dari ${g.name}`, 'success');
+      closeDetailModalFn();
+    } catch (err) {
+      console.error(err);
+      showToast(`❌ ${err.message}`, 'error');
+    }
+  }
+
+  // ===== REMOVE MEMBER (pencipta buang ahli) =====
+  async function removeMember(groupId, memberMatrix) {
+    const g = groups.find(x => x.id === groupId);
+    if (!g) return;
+
+    if (g.creator !== currentStudent.matrix) {
+      showToast('❌ Hanya pencipta boleh remove ahli', 'error');
+      return;
+    }
+    if (memberMatrix === g.creator) {
+      showToast('❌ Tak boleh remove diri sendiri (pencipta)', 'error');
+      return;
+    }
+
+    const member = getStudentByMatrix(memberMatrix);
+    if (!confirm(`Keluarkan ${member ? member.name : 'ahli ni'} dari ${g.name}?`)) return;
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const groupRef = doc(db, "groups", groupId);
+        const groupSnap = await transaction.get(groupRef);
+        if (!groupSnap.exists()) throw new Error("Group tak wujud");
+
+        const data = groupSnap.data();
+        const members = data.members || [];
+
+        if (!members.includes(memberMatrix)) {
+          throw new Error("Ahli takde dalam group");
+        }
+
+        const newMembers = members.filter(m => m !== memberMatrix);
+        transaction.update(groupRef, { members: newMembers });
+      });
+
+      showToast(`✅ Berjaya remove ${member ? member.name : 'ahli'}`, 'success');
+      // Refresh detail modal
+      openDetail(groupId);
+    } catch (err) {
+      console.error(err);
+      showToast(`❌ ${err.message}`, 'error');
+    }
+  }
+
+  // ===== DELETE GROUP (pencipta delete group) =====
+  async function deleteGroup(groupId) {
+    const g = groups.find(x => x.id === groupId);
+    if (!g) return;
+
+    if (g.creator !== currentStudent.matrix) {
+      showToast('❌ Hanya pencipta boleh delete group', 'error');
+      return;
+    }
+
+    if (!confirm(`⚠️ DELETE ${g.name}?\n\nSemua ahli akan keluar dari group ini. Tindakan ini tak boleh undo.`)) return;
+
+    try {
+      await deleteDoc(doc(db, "groups", groupId));
+      showToast(`🗑️ ${g.name} berjaya dipadam`, 'success');
+      closeDetailModalFn();
+    } catch (err) {
+      console.error(err);
+      showToast('❌ Gagal delete group', 'error');
+    }
+  }
+
   // ===== CREATE GROUP =====
   function openCreateModal() {
     if (groups.length >= MAX_GROUPS_TOTAL) {
@@ -1294,7 +1449,7 @@
         name: name,
         creator: currentStudent.matrix,
         creatorName: currentStudent.name,
-        size: selectedSize,        // 2, 3, 4, atau 5
+        size: selectedSize,
         members: [currentStudent.matrix],
         createdAt: serverTimestamp()
       });
@@ -1325,10 +1480,11 @@
     detailSubtitle.textContent = `Dicipta oleh ${creator ? creator.name : (g.creatorName || 'Unknown')}`;
     detailMemberCount.textContent = `${members.length}/${g.size}`;
 
+    // Info box
     if (isCreator) {
       detailInfo.style.display = 'flex';
       detailInfo.className = 'info-box';
-      detailInfo.innerHTML = '👑 Anda adalah <strong>pencipta</strong> group ini.';
+      detailInfo.innerHTML = '👑 Anda adalah <strong>pencipta</strong> group ini. Anda boleh remove ahli atau delete group.';
     } else if (isMine) {
       detailInfo.style.display = 'flex';
       detailInfo.className = 'info-box';
@@ -1337,11 +1493,14 @@
       detailInfo.style.display = 'none';
     }
 
+    // Members list
     membersList.innerHTML = members.map((matrix, i) => {
       const s = getStudentByMatrix(matrix);
       if (!s) return '';
       const isC = matrix === g.creator;
       const isYou = matrix === currentStudent.matrix;
+      const canRemove = isCreator && !isC; // pencipta boleh remove orang lain (bukan diri sendiri)
+
       return `
         <div class="member-item ${isC ? 'creator' : ''}">
           <div class="m-num">${i + 1}</div>
@@ -1350,27 +1509,72 @@
             <div class="m-name">${s.name}</div>
           </div>
           ${isC ? '<span class="creator-badge">👑 CREATOR</span>' : ''}
-          ${isYou ? '<span class="you-badge">YOU</span>' : ''}
+          ${isYou && !isC ? '<span class="you-badge">YOU</span>' : ''}
+          ${canRemove ? `<button class="remove-btn" data-remove="${matrix}" title="Keluarkan ahli">✕ Remove</button>` : ''}
         </div>
       `;
     }).join('');
 
+    // Attach remove listener
+    membersList.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeMember(groupId, btn.dataset.remove);
+      });
+    });
+
+    // Actions
     detailActions.innerHTML = '';
-    if (!isMine && !isFull && !isStudentInAnyGroup(currentStudent.matrix)) {
-      const btn = document.createElement('button');
-      btn.className = 'btn-primary';
-      btn.textContent = '➕ Join Group';
-      btn.addEventListener('click', () => {
+
+    if (isCreator) {
+      // Pencipta: Delete Group
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'btn-danger';
+      deleteBtn.textContent = '🗑️ Delete Group';
+      deleteBtn.addEventListener('click', () => deleteGroup(groupId));
+      detailActions.appendChild(deleteBtn);
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'btn-secondary';
+      closeBtn.textContent = 'Tutup';
+      closeBtn.addEventListener('click', closeDetailModalFn);
+      detailActions.appendChild(closeBtn);
+    } else if (isMine) {
+      // Ahli biasa: Leave Group
+      const leaveBtn = document.createElement('button');
+      leaveBtn.className = 'btn-warning';
+      leaveBtn.textContent = '🚪 Leave Group';
+      leaveBtn.addEventListener('click', () => leaveGroup(groupId));
+      detailActions.appendChild(leaveBtn);
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'btn-secondary';
+      closeBtn.textContent = 'Tutup';
+      closeBtn.addEventListener('click', closeDetailModalFn);
+      detailActions.appendChild(closeBtn);
+    } else if (!isFull && !isStudentInAnyGroup(currentStudent.matrix)) {
+      // Bukan ahli: Join
+      const joinBtn = document.createElement('button');
+      joinBtn.className = 'btn-primary';
+      joinBtn.textContent = '➕ Join Group';
+      joinBtn.addEventListener('click', () => {
         closeDetailModalFn();
         joinGroup(groupId);
       });
-      detailActions.appendChild(btn);
+      detailActions.appendChild(joinBtn);
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'btn-secondary';
+      closeBtn.textContent = 'Tutup';
+      closeBtn.addEventListener('click', closeDetailModalFn);
+      detailActions.appendChild(closeBtn);
     } else {
-      const btn = document.createElement('button');
-      btn.className = 'btn-secondary';
-      btn.textContent = 'Tutup';
-      btn.addEventListener('click', closeDetailModalFn);
-      detailActions.appendChild(btn);
+      // Locked / penuh
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'btn-secondary';
+      closeBtn.textContent = 'Tutup';
+      closeBtn.addEventListener('click', closeDetailModalFn);
+      detailActions.appendChild(closeBtn);
     }
 
     detailModal.classList.add('show');
@@ -1385,6 +1589,11 @@
     renderProfile();
     renderStats();
     renderGroups();
+
+    // Kalau detail modal tengah open, refresh content (contoh: lepas remove member)
+    if (detailModal.classList.contains('show') && detailTitle.dataset.groupId) {
+      // biar je, tak refresh auto sebab user tengah tengok
+    }
   }
 
   // ===== TOAST =====
