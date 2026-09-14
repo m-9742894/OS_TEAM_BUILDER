@@ -538,14 +538,15 @@
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
   }
 
+  /* Size selector — 2 options sahaja (3 atau 4) */
   .size-selector {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
   .size-btn {
-    padding: 12px 0;
-    border-radius: 10px;
+    padding: 16px 0;
+    border-radius: 12px;
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text);
@@ -553,8 +554,23 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
   }
-  .size-btn:hover {
+  .size-btn .size-num {
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+  .size-btn .size-sub {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .size-btn:hover:not(:disabled) {
     background: var(--card-hover);
     border-color: rgba(99, 102, 241, 0.5);
   }
@@ -562,8 +578,57 @@
     background: linear-gradient(135deg, var(--primary), var(--accent));
     border-color: transparent;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
-    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    transform: translateY(-2px);
+  }
+  .size-btn.active .size-sub {
+    color: rgba(255,255,255,0.8);
+  }
+  .size-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: rgba(148, 163, 184, 0.08);
+    border-color: rgba(148, 163, 184, 0.2);
+  }
+  .size-btn:disabled .size-num,
+  .size-btn:disabled .size-sub {
+    color: var(--text-muted);
+  }
+
+  /* Available students info */
+  .available-info {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: #c7d2fe;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .available-info .avail-num {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    flex-shrink: 0;
+  }
+  .available-info.warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #fcd34d;
+  }
+  .available-info.warning .avail-num {
+    color: #fcd34d;
+  }
+  .available-info.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+  .available-info.danger .avail-num {
+    color: #fca5a5;
   }
 
   .modal-actions {
@@ -842,7 +907,7 @@
         <div class="section-header">
           <h2>
             Senarai Group
-            <span class="badge" id="groupCountBadge">0/8</span>
+            <span class="badge" id="groupCountBadge">0</span>
           </h2>
           <button class="create-btn" id="createGroupBtn">
             ➕ Cipta Group
@@ -860,7 +925,7 @@
       <div class="modal-header">
         <div>
           <h3>➕ Cipta Group Baru</h3>
-          <p>Tetapkan bilangan ahli (2 - 5 orang)</p>
+          <p>Pilih saiz group (3 atau 4 orang)</p>
         </div>
         <button class="modal-close" id="closeCreateModal">✕</button>
       </div>
@@ -876,14 +941,23 @@
       </div>
 
       <div class="form-group">
-        <label>Bilangan Ahli (Max 5)</label>
+        <label>Bilangan Ahli</label>
         <div class="size-selector" id="sizeSelector">
-          <button class="size-btn" data-size="2">2</button>
-          <button class="size-btn active" data-size="3">3</button>
-          <button class="size-btn" data-size="4">4</button>
-          <button class="size-btn" data-size="5">5</button>
+          <button class="size-btn" data-size="3">
+            <span class="size-num">3</span>
+            <span class="size-sub">Orang</span>
+          </button>
+          <button class="size-btn" data-size="4">
+            <span class="size-num">4</span>
+            <span class="size-sub">Orang</span>
+          </button>
         </div>
-        <div class="hint">Min 2, Max 5 orang (termasuk anda)</div>
+        <div class="hint" id="sizeHint">Pilih 3 atau 4 orang (termasuk anda)</div>
+      </div>
+
+      <div class="available-info" id="availableInfo">
+        <span class="avail-num" id="availNum">0</span>
+        <span>pelajar masih belum join mana-mana group</span>
       </div>
 
       <div class="modal-actions">
@@ -954,9 +1028,9 @@
   const db = getFirestore(app);
 
   // ===== KONFIG =====
-  const MAX_GROUPS_TOTAL = 8;
-  const MIN_GROUP_SIZE = 2;
-  const MAX_GROUP_SIZE = 5;
+  // Tiada limit group total
+  // Hanya boleh pilih 3 atau 4 orang sahaja
+  const VALID_SIZES = [3, 4];
 
   // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
   const ALL_STUDENTS = [
@@ -1017,6 +1091,9 @@
   const confirmCreate = document.getElementById('confirmCreate');
   const groupNameInput = document.getElementById('groupNameInput');
   const sizeSelector = document.getElementById('sizeSelector');
+  const sizeHint = document.getElementById('sizeHint');
+  const availableInfo = document.getElementById('availableInfo');
+  const availNum = document.getElementById('availNum');
 
   const detailModal = document.getElementById('detailModal');
   const closeDetailModal = document.getElementById('closeDetailModal');
@@ -1051,6 +1128,20 @@
 
   function getGroupOfStudent(matrix) {
     return groups.find(g => (g.members || []).includes(matrix));
+  }
+
+  // ===== KIRA PELAJAR YANG BELUM JOIN (tidak termasuk current student) =====
+  // Ambil kira current student akan jadi pencipta dalam group baru
+  function getAvailableStudentsCount() {
+    const joinedSet = new Set();
+    groups.forEach(g => (g.members || []).forEach(m => joinedSet.add(m)));
+
+    // Bilangan pelajar yang belum join (termasuk current student)
+    const notJoined = ALL_STUDENTS.filter(s => !joinedSet.has(s.matrix));
+
+    // Current student mesti belum join (sebab tu dia boleh buka modal)
+    // So jumlah yang boleh dipilih dalam group baru = bilangan notJoined
+    return notJoined.length;
   }
 
   // ===== LOAD CURRENT STUDENT =====
@@ -1156,12 +1247,9 @@
     totalStudentsEl.textContent = total;
     joinedCountEl.textContent = joined;
     notJoinedCountEl.textContent = notJoined;
-    groupCountBadge.textContent = `${groups.length}/${MAX_GROUPS_TOTAL}`;
+    groupCountBadge.textContent = groups.length;
 
-    if (groups.length >= MAX_GROUPS_TOTAL) {
-      createGroupBtn.disabled = true;
-      createGroupBtn.textContent = '🚫 Group Penuh';
-    } else if (isStudentInAnyGroup(currentStudent.matrix)) {
+    if (isStudentInAnyGroup(currentStudent.matrix)) {
       createGroupBtn.disabled = true;
       createGroupBtn.textContent = '➕ Cipta Group';
       createGroupBtn.title = 'Anda sudah join group';
@@ -1266,7 +1354,7 @@
         if (members.includes(currentStudent.matrix)) {
           throw new Error("Anda dah join group ini");
         }
-        if (members.length >= data.size || members.length >= MAX_GROUP_SIZE) {
+        if (members.length >= data.size) {
           throw new Error("Group sudah penuh");
         }
 
@@ -1385,20 +1473,68 @@
     }
   }
 
+  // ===== UPDATE SIZE BUTTONS (smart disable) =====
+  function updateSizeButtons() {
+    const available = getAvailableStudentsCount();
+
+    // Update available info
+    availNum.textContent = available;
+    availableInfo.className = 'available-info';
+    if (available < 3) {
+      availableInfo.classList.add('danger');
+      sizeHint.textContent = `⚠️ Tinggal ${available} orang belum join — tak cukup untuk buat group`;
+    } else if (available === 3) {
+      availableInfo.classList.add('warning');
+      sizeHint.textContent = `⚠️ Tinggal 3 orang — hanya boleh pilih 3 orang`;
+    } else {
+      sizeHint.textContent = `Pilih 3 atau 4 orang (termasuk anda)`;
+    }
+
+    // Enable/disable butang 3 dan 4
+    sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+      const size = Number(btn.dataset.size);
+
+      // Enable kalau available cukup
+      const canUse = available >= size;
+      btn.disabled = !canUse;
+
+      // Set active state
+      btn.classList.toggle('active', size === selectedSize && !btn.disabled);
+    });
+
+    // Kalau selectedSize disabled, auto tukar ke size yang boleh
+    const selectedBtn = sizeSelector.querySelector(`.size-btn[data-size="${selectedSize}"]`);
+    if (selectedBtn && selectedBtn.disabled) {
+      // Cari size terkecil yang boleh
+      const fallback = sizeSelector.querySelector('.size-btn:not([disabled])');
+      if (fallback) {
+        selectedSize = Number(fallback.dataset.size);
+        sizeSelector.querySelectorAll('.size-btn').forEach(b => {
+          b.classList.toggle('active', Number(b.dataset.size) === selectedSize);
+        });
+      }
+    }
+  }
+
   // ===== CREATE GROUP =====
   function openCreateModal() {
-    if (groups.length >= MAX_GROUPS_TOTAL) {
-      showToast(`❌ Dah capai had ${MAX_GROUPS_TOTAL} group`, 'error');
-      return;
-    }
     if (isStudentInAnyGroup(currentStudent.matrix)) {
       showToast('❌ Anda sudah join group', 'error');
       return;
     }
+
+    const available = getAvailableStudentsCount();
+    if (available < 3) {
+      showToast(`❌ Tak cukup pelajar. Tinggal ${available} orang belum join (min 3)`, 'error');
+      return;
+    }
+
     groupNameInput.value = '';
+    // Set default size: kalau available 3 → pilih 3; kalau 4+ → pilih 3 (default)
     selectedSize = 3;
-    updateSizeButtons();
+
     createModal.classList.add('show');
+    updateSizeButtons();
     setTimeout(() => groupNameInput.focus(), 100);
   }
 
@@ -1406,23 +1542,20 @@
     createModal.classList.remove('show');
   }
 
-  function updateSizeButtons() {
-    sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
-      btn.classList.toggle('active', Number(btn.dataset.size) === selectedSize);
-    });
-  }
-
   async function createGroup() {
-    if (groups.length >= MAX_GROUPS_TOTAL) {
-      showToast(`❌ Dah capai had ${MAX_GROUPS_TOTAL} group`, 'error');
-      return;
-    }
     if (isStudentInAnyGroup(currentStudent.matrix)) {
       showToast('❌ Anda sudah join group', 'error');
       return;
     }
-    if (selectedSize > MAX_GROUP_SIZE || selectedSize < MIN_GROUP_SIZE) {
-      showToast(`❌ Saiz mesti antara ${MIN_GROUP_SIZE} - ${MAX_GROUP_SIZE} orang`, 'error');
+
+    const available = getAvailableStudentsCount();
+    if (available < selectedSize) {
+      showToast(`❌ Tak cukup pelajar. Tinggal ${available} orang sahaja`, 'error');
+      return;
+    }
+
+    if (!VALID_SIZES.includes(selectedSize)) {
+      showToast(`❌ Saiz mesti 3 atau 4 orang sahaja`, 'error');
       return;
     }
 
@@ -1577,6 +1710,11 @@
     renderProfile();
     renderStats();
     renderGroups();
+
+    // Update modal kalau tengah buka
+    if (createModal.classList.contains('show')) {
+      updateSizeButtons();
+    }
   }
 
   // ===== TOAST =====
@@ -1598,6 +1736,7 @@
 
   sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.disabled) return;
       selectedSize = Number(btn.dataset.size);
       updateSizeButtons();
     });
