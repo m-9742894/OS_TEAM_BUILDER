@@ -728,7 +728,7 @@
         </div>
         <div class="stat-card pink">
           <div class="stat-icon">🏆</div>
-          <div class="stat-value" id="statGroups">0 / 8</div>
+          <div class="stat-value" id="statGroups">0</div>
           <div class="stat-label">Total Group</div>
         </div>
       </div>
@@ -791,9 +791,6 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
-  // ===== KONFIG =====
-  const MAX_GROUPS_TOTAL = 8;
 
   // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
   const ALL_STUDENTS = [
@@ -896,7 +893,7 @@
     statTotalStudents.textContent = total;
     statJoined.textContent = joined;
     statNotJoined.textContent = notJoined;
-    statGroups.textContent = `${groups.length} / ${MAX_GROUPS_TOTAL}`;
+    statGroups.textContent = groups.length;
 
     groupCountBadge.textContent = `${groups.length} Group`;
     notJoinedBadge.textContent = `${notJoined} Pelajar`;
