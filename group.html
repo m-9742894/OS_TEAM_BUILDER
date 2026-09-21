@@ -1292,7 +1292,7 @@
 
   // ⚙️ Cloudinary Config
   const CLOUDINARY_CLOUD_NAME = 'tt0ofn22';
-  const CLOUDINARY_UPLOAD_PRESET = 'osteam_upload'; // ⚠️ Pastikan nama preset ini sama
+  const CLOUDINARY_UPLOAD_PRESET = 'osteam_upload'; // ⚠️ Pastikan nama preset sama
   const CLOUDINARY_FOLDER = 'osteam-uploads';
 
   // ===== DATA PELAJAR (34 orang) =====
@@ -1411,7 +1411,7 @@
   }
 
   function escapeHtml(str) {
-    return String(str)
+    return String(str || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -2053,6 +2053,20 @@
     saveUploadedFiles(files);
   }
 
+  // ===== SIMPAN METADATA FAIL KE FIRESTORE =====
+  async function saveFileToFirestore(fileMeta) {
+    try {
+      const docRef = doc(collection(db, "uploads"));
+      await setDoc(docRef, {
+        ...fileMeta,
+        createdAt: serverTimestamp()
+      });
+      console.log("✅ Metadata fail disimpan ke Firestore");
+    } catch (err) {
+      console.error("Gagal simpan metadata fail:", err);
+    }
+  }
+
   // ===== INIT CLOUDINARY WIDGET =====
   function initCloudinaryWidget() {
     if (typeof cloudinary === 'undefined') {
@@ -2098,6 +2112,8 @@
 
         if (result && result.event === 'success') {
           const info = result.info;
+          const myGroup = getGroupOfStudent(currentStudent.matrix);
+
           const fileMeta = {
             publicId: info.public_id,
             url: info.secure_url,
@@ -2106,10 +2122,18 @@
             format: info.format,
             resourceType: info.resource_type,
             uploadedAt: new Date().toISOString(),
-            uploadedBy: currentStudent ? currentStudent.name : 'Unknown'
+            uploadedBy: currentStudent ? currentStudent.name : 'Unknown',
+            uploadedByMatrix: currentStudent ? currentStudent.matrix : '',
+            groupId: myGroup ? myGroup.id : 'no-group',
+            groupName: myGroup ? myGroup.name : 'Tanpa Group'
           };
 
+          // Simpan ke Firestore (untuk dashboard baca)
+          saveFileToFirestore(fileMeta);
+
+          // Simpan juga dalam localStorage (untuk paparan sendiri)
           addUploadedFile(fileMeta);
+
           showUploadStatus(`✅ Berjaya upload: ${fileMeta.name}`, 'success');
           showToast(`✅ Fail "${fileMeta.name}" berjaya diupload`, 'success');
           renderFileList();
