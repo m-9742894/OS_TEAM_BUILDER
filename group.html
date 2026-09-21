@@ -434,6 +434,208 @@
   }
   .empty-state .desc { font-size: 0.85rem; }
 
+  /* ===== MY GROUP BOX ===== */
+  .my-group-box {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.1));
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 16px;
+    padding: 18px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+  .my-group-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--success), var(--primary));
+  }
+  .my-group-box .box-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6ee7b7;
+    margin-bottom: 8px;
+  }
+  .my-group-box .box-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .my-group-box .box-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .my-group-box .box-sub strong { color: #c7d2fe; }
+
+  /* ===== UPLOAD SECTION ===== */
+  .upload-box {
+    background: var(--card);
+    border: 2px dashed rgba(99, 102, 241, 0.4);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    display: block;
+  }
+  .upload-box:hover,
+  .upload-box.dragover {
+    background: var(--card-hover);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+  }
+  .upload-box .upload-icon {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .upload-box .upload-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .upload-box .upload-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .upload-box input[type="file"] {
+    display: none;
+  }
+
+  .upload-status {
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .upload-status.show { display: flex; }
+  .upload-status.success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+  }
+  .upload-status.error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+  .upload-status.loading {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+  }
+
+  /* ===== FILE LIST ===== */
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  .file-item:hover {
+    background: var(--card-hover);
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+  }
+  .file-item .file-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+  .file-item .file-info { flex: 1; min-width: 0; }
+  .file-item .file-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-item .file-meta {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .file-item .file-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .file-item .file-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .file-item .file-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .file-item .file-btn.download {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #6ee7b7;
+  }
+  .file-item .file-btn.download:hover {
+    background: rgba(16, 185, 129, 0.3);
+    color: #fff;
+  }
+
+  /* Refresh btn */
+  .refresh-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .refresh-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+
   /* MODAL */
   .modal-overlay {
     position: fixed;
@@ -847,6 +1049,15 @@
     .join-btn { padding: 7px 14px; font-size: 0.78rem; }
     .modal { padding: 20px; border-radius: 18px; }
     .remove-btn { font-size: 0.68rem; padding: 5px 10px; }
+
+    .file-item { padding: 10px; gap: 10px; }
+    .file-item .file-icon { width: 34px; height: 34px; font-size: 1rem; }
+    .file-item .file-name { font-size: 0.8rem; }
+    .file-item .file-btn { padding: 5px 8px; font-size: 0.65rem; }
+    .file-item .file-actions { flex-direction: column; gap: 4px; }
+
+    .upload-box { padding: 20px 14px; }
+    .upload-box .upload-icon { font-size: 2rem; }
   }
   @media (max-width: 380px) {
     .profile-info .name { font-size: 0.95rem; }
@@ -902,6 +1113,17 @@
         </div>
       </div>
 
+      <!-- MY GROUP INFO -->
+      <div class="section" style="margin-top: 20px; display: none;" id="myGroupSection">
+        <div class="section-header">
+          <h2>
+            <span>👥</span>
+            Group Saya
+          </h2>
+        </div>
+        <div class="my-group-box" id="myGroupBox"></div>
+      </div>
+
       <!-- GROUP SECTION -->
       <div class="section" style="margin-top: 20px;">
         <div class="section-header">
@@ -914,6 +1136,42 @@
           </button>
         </div>
         <div class="group-list" id="groupList"></div>
+      </div>
+
+      <!-- UPLOAD SECTION -->
+      <div class="section" style="margin-top: 20px;">
+        <div class="section-header">
+          <h2>
+            <span>📁</span>
+            Upload Fail Kumpulan
+          </h2>
+        </div>
+        <label class="upload-box" id="uploadBox">
+          <input type="file" id="fileInput" />
+          <span class="upload-icon">📤</span>
+          <div class="upload-title">Klik atau drag fail ke sini</div>
+          <div class="upload-desc">Max 10MB · PDF, DOCX, PPT, IMG, ZIP, dll</div>
+        </label>
+        <div class="upload-status" id="uploadStatus"></div>
+      </div>
+
+      <!-- FILE LIST SECTION -->
+      <div class="section" style="margin-top: 20px;">
+        <div class="section-header">
+          <h2>
+            <span>📂</span>
+            Fail Yang Dah Upload
+            <span class="badge" id="fileListBadge">0</span>
+          </h2>
+          <button class="refresh-btn" id="refreshFileBtn">🔄 Refresh</button>
+        </div>
+        <div class="file-list" id="fileList">
+          <div class="empty-state" style="padding: 30px 20px;">
+            <div class="emoji" style="font-size: 1.8rem;">📭</div>
+            <div class="title" style="font-size: 0.9rem;">Belum ada fail</div>
+            <div class="desc" style="font-size: 0.78rem;">Upload fail pertama anda</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1028,9 +1286,10 @@
   const db = getFirestore(app);
 
   // ===== KONFIG =====
-  // Tiada limit group total
-  // Hanya boleh pilih 3 atau 4 orang sahaja
   const VALID_SIZES = [3, 4];
+
+  // 🔴 GANTI DENGAN URL APPS SCRIPT ANDA
+  const UPLOAD_PROXY_URL = 'https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec';
 
   // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
   const ALL_STUDENTS = [
@@ -1104,6 +1363,16 @@
   const membersList = document.getElementById('membersList');
   const detailActions = document.getElementById('detailActions');
 
+  const myGroupSection = document.getElementById('myGroupSection');
+  const myGroupBox = document.getElementById('myGroupBox');
+
+  const uploadBox = document.getElementById('uploadBox');
+  const fileInput = document.getElementById('fileInput');
+  const uploadStatus = document.getElementById('uploadStatus');
+  const fileList = document.getElementById('fileList');
+  const fileListBadge = document.getElementById('fileListBadge');
+  const refreshFileBtn = document.getElementById('refreshFileBtn');
+
   const toastEl = document.getElementById('toast');
 
   // ===== STATE =====
@@ -1130,18 +1399,20 @@
     return groups.find(g => (g.members || []).includes(matrix));
   }
 
-  // ===== KIRA PELAJAR YANG BELUM JOIN (tidak termasuk current student) =====
-  // Ambil kira current student akan jadi pencipta dalam group baru
   function getAvailableStudentsCount() {
     const joinedSet = new Set();
     groups.forEach(g => (g.members || []).forEach(m => joinedSet.add(m)));
-
-    // Bilangan pelajar yang belum join (termasuk current student)
     const notJoined = ALL_STUDENTS.filter(s => !joinedSet.has(s.matrix));
-
-    // Current student mesti belum join (sebab tu dia boleh buka modal)
-    // So jumlah yang boleh dipilih dalam group baru = bilangan notJoined
     return notJoined.length;
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   // ===== LOAD CURRENT STUDENT =====
@@ -1260,6 +1531,30 @@
     }
   }
 
+  // ===== RENDER MY GROUP INFO =====
+  function renderMyGroupInfo() {
+    const myGroup = getGroupOfStudent(currentStudent.matrix);
+
+    if (!myGroup) {
+      myGroupSection.style.display = 'none';
+      return;
+    }
+
+    myGroupSection.style.display = 'block';
+    const creator = getStudentByMatrix(myGroup.creator);
+    const members = myGroup.members || [];
+    const isCreator = myGroup.creator === currentStudent.matrix;
+
+    myGroupBox.innerHTML = `
+      <div class="box-title">${isCreator ? '👑 Anda Pencipta Group' : '✅ Anda Ahli Group'}</div>
+      <div class="box-name">${escapeHtml(myGroup.name)}</div>
+      <div class="box-sub">
+        Dicipta oleh <strong>${escapeHtml(creator ? creator.name : (myGroup.creatorName || 'Unknown'))}</strong>
+        · ${members.length}/${myGroup.size} ahli
+      </div>
+    `;
+  }
+
   // ===== RENDER GROUP LIST =====
   function renderGroups() {
     if (groups.length === 0) {
@@ -1306,8 +1601,8 @@
           <div class="group-title">
             <div class="group-icon">👥</div>
             <div style="min-width:0; flex:1;">
-              <div class="group-name">${g.name}</div>
-              <div class="group-creator">Dicipta oleh <strong>${creator ? creator.name : (g.creatorName || 'Unknown')}</strong></div>
+              <div class="group-name">${escapeHtml(g.name)}</div>
+              <div class="group-creator">Dicipta oleh <strong>${escapeHtml(creator ? creator.name : (g.creatorName || 'Unknown'))}</strong></div>
             </div>
           </div>
         </div>
@@ -1473,11 +1768,10 @@
     }
   }
 
-  // ===== UPDATE SIZE BUTTONS (smart disable) =====
+  // ===== UPDATE SIZE BUTTONS =====
   function updateSizeButtons() {
     const available = getAvailableStudentsCount();
 
-    // Update available info
     availNum.textContent = available;
     availableInfo.className = 'available-info';
     if (available < 3) {
@@ -1490,22 +1784,15 @@
       sizeHint.textContent = `Pilih 3 atau 4 orang (termasuk anda)`;
     }
 
-    // Enable/disable butang 3 dan 4
     sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
       const size = Number(btn.dataset.size);
-
-      // Enable kalau available cukup
       const canUse = available >= size;
       btn.disabled = !canUse;
-
-      // Set active state
       btn.classList.toggle('active', size === selectedSize && !btn.disabled);
     });
 
-    // Kalau selectedSize disabled, auto tukar ke size yang boleh
     const selectedBtn = sizeSelector.querySelector(`.size-btn[data-size="${selectedSize}"]`);
     if (selectedBtn && selectedBtn.disabled) {
-      // Cari size terkecil yang boleh
       const fallback = sizeSelector.querySelector('.size-btn:not([disabled])');
       if (fallback) {
         selectedSize = Number(fallback.dataset.size);
@@ -1530,7 +1817,6 @@
     }
 
     groupNameInput.value = '';
-    // Set default size: kalau available 3 → pilih 3; kalau 4+ → pilih 3 (default)
     selectedSize = 3;
 
     createModal.classList.add('show');
@@ -1633,8 +1919,8 @@
         <div class="member-item ${isC ? 'creator' : ''}">
           <div class="m-num">${i + 1}</div>
           <div class="m-info">
-            <div class="m-matrix">${s.matrix}</div>
-            <div class="m-name">${s.name}</div>
+            <div class="m-matrix">${escapeHtml(s.matrix)}</div>
+            <div class="m-name">${escapeHtml(s.name)}</div>
           </div>
           ${isC ? '<span class="creator-badge">👑 CREATOR</span>' : ''}
           ${isYou && !isC ? '<span class="you-badge">YOU</span>' : ''}
@@ -1710,8 +1996,8 @@
     renderProfile();
     renderStats();
     renderGroups();
+    renderMyGroupInfo();
 
-    // Update modal kalau tengah buka
     if (createModal.classList.contains('show')) {
       updateSizeButtons();
     }
@@ -1727,6 +2013,194 @@
       toastEl.classList.remove('show');
     }, 2800);
   }
+
+  // ==================================================
+  // ===== UPLOAD FILE TO GOOGLE DRIVE (via Apps Script)
+  // ==================================================
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showUploadStatus(msg, type) {
+    uploadStatus.textContent = msg;
+    uploadStatus.className = 'upload-status show ' + type;
+    if (type !== 'loading') {
+      setTimeout(() => {
+        uploadStatus.classList.remove('show');
+      }, 5000);
+    }
+  }
+
+  async function handleUpload(file) {
+    if (!file) return;
+
+    // Validate size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showUploadStatus('❌ Fail terlalu besar. Max 10MB.', 'error');
+      return;
+    }
+
+    if (UPLOAD_PROXY_URL.includes('AKfycbxxxxxxxx')) {
+      showUploadStatus('⚠️ Upload belum setup. Sila masukkan URL Apps Script.', 'error');
+      return;
+    }
+
+    showUploadStatus(`⏳ Sedang upload "${file.name}"...`, 'loading');
+
+    try {
+      const base64 = await fileToBase64(file);
+
+      const response = await fetch(UPLOAD_PROXY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify({
+          file: base64,
+          name: file.name,
+          contentType: file.type || 'application/octet-stream'
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        showUploadStatus(`✅ Berjaya upload: ${file.name}`, 'success');
+        showToast(`✅ Fail "${file.name}" berjaya diupload`, 'success');
+        loadFileList();
+      } else {
+        showUploadStatus(`❌ Gagal: ${result.error || 'Unknown error'}`, 'error');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      showUploadStatus(`❌ Gagal upload: ${err.message}`, 'error');
+    }
+
+    fileInput.value = '';
+  }
+
+  async function loadFileList() {
+    if (UPLOAD_PROXY_URL.includes('AKfycbxxxxxxxx')) {
+      fileList.innerHTML = `
+        <div class="empty-state" style="padding: 30px 20px;">
+          <div class="emoji" style="font-size: 1.8rem;">⚠️</div>
+          <div class="title" style="font-size: 0.9rem;">Upload belum setup</div>
+          <div class="desc" style="font-size: 0.78rem;">Sila masukkan URL Apps Script dalam code</div>
+        </div>
+      `;
+      return;
+    }
+
+    try {
+      fileList.innerHTML = `
+        <div class="empty-state" style="padding: 30px 20px;">
+          <div class="emoji" style="font-size: 1.8rem;">⏳</div>
+          <div class="title" style="font-size: 0.9rem;">Memuatkan fail...</div>
+        </div>
+      `;
+
+      const response = await fetch(UPLOAD_PROXY_URL + '?t=' + Date.now());
+      const result = await response.json();
+
+      if (!result.success) throw new Error(result.error || 'Failed to load');
+
+      const files = result.files || [];
+      fileListBadge.textContent = files.length;
+
+      if (files.length === 0) {
+        fileList.innerHTML = `
+          <div class="empty-state" style="padding: 30px 20px;">
+            <div class="emoji" style="font-size: 1.8rem;">📭</div>
+            <div class="title" style="font-size: 0.9rem;">Belum ada fail</div>
+            <div class="desc" style="font-size: 0.78rem;">Upload fail pertama anda</div>
+          </div>
+        `;
+        return;
+      }
+
+      fileList.innerHTML = files.map(f => {
+        const sizeMB = (f.size / 1024 / 1024).toFixed(2);
+        const date = new Date(f.dateCreated).toLocaleDateString('ms-MY', {
+          day: '2-digit', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        const ext = (f.fileName.split('.').pop() || '').toUpperCase();
+
+        let icon = '📄';
+        if (['PDF'].includes(ext)) icon = '📕';
+        else if (['DOC', 'DOCX'].includes(ext)) icon = '📘';
+        else if (['PPT', 'PPTX'].includes(ext)) icon = '📙';
+        else if (['XLS', 'XLSX'].includes(ext)) icon = '📗';
+        else if (['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP', 'SVG'].includes(ext)) icon = '🖼️';
+        else if (['ZIP', 'RAR', '7Z'].includes(ext)) icon = '📦';
+        else if (['MP4', 'MOV', 'AVI', 'MKV'].includes(ext)) icon = '🎬';
+        else if (['MP3', 'WAV', 'M4A'].includes(ext)) icon = '🎵';
+
+        return `
+          <div class="file-item">
+            <div class="file-icon">${icon}</div>
+            <div class="file-info">
+              <div class="file-name">${escapeHtml(f.fileName)}</div>
+              <div class="file-meta">${sizeMB} MB · ${date}</div>
+            </div>
+            <div class="file-actions">
+              <a class="file-btn" href="${f.previewUrl}" target="_blank" rel="noopener">👁️ View</a>
+              <a class="file-btn download" href="${f.downloadUrl}" target="_blank" rel="noopener">⬇️</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (err) {
+      console.error('Load file list error:', err);
+      fileList.innerHTML = `
+        <div class="empty-state" style="padding: 30px 20px;">
+          <div class="emoji" style="font-size: 1.8rem;">⚠️</div>
+          <div class="title" style="font-size: 0.9rem;">Gagal load fail</div>
+          <div class="desc" style="font-size: 0.78rem;">${escapeHtml(err.message)}</div>
+        </div>
+      `;
+    }
+  }
+
+  // ===== UPLOAD EVENTS =====
+  ['dragenter', 'dragover'].forEach(evt => {
+    uploadBox.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadBox.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    uploadBox.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadBox.classList.remove('dragover');
+    });
+  });
+
+  uploadBox.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) handleUpload(files[0]);
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) handleUpload(e.target.files[0]);
+  });
+
+  refreshFileBtn.addEventListener('click', () => {
+    loadFileList();
+    showToast('🔄 Senarai fail dikemaskini', 'success');
+  });
 
   // ===== EVENTS =====
   createGroupBtn.addEventListener('click', openCreateModal);
@@ -1792,6 +2266,10 @@
       mainContent.style.display = 'block';
 
       renderProfile();
+
+      // Load file list
+      loadFileList();
+
     } catch (err) {
       console.error(err);
       pageLoading.innerHTML = `⚠️ Gagal sambung Firestore.<br><small>${err.message}</small>`;
