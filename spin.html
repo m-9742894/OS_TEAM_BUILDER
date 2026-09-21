@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spin The Wheel — Pilih Group Bentang</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  :root {
+    --primary: #6366f1;
+    --accent: #ec4899;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --card: rgba(255, 255, 255, 0.06);
+    --card-hover: rgba(255, 255, 255, 0.12);
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: rgba(255, 255, 255, 0.1);
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    color: var(--text);
+    padding: 24px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+  }
+  body::before {
+    width: 500px; height: 500px;
+    background: var(--primary);
+    top: -150px; left: -150px;
+  }
+  body::after {
+    width: 500px; height: 500px;
+    background: var(--accent);
+    bottom: -150px; right: -150px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* HEADER */
+  .page-header {
+    text-align: center;
+    padding: 10px 0 6px;
+  }
+
+  .page-header .badge-top {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #a5b4fc, #f0abfc, #a5b4fc);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shine 4s linear infinite;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+
+  .page-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* MAIN LAYOUT */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 960px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* WHEEL SECTION */
+  .wheel-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wheel-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+    background-size: 200% auto;
+    animation: shine 4s linear infinite;
+  }
+
+  .wheel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wheel-pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-top: 40px solid var(--accent);
+    filter: drop-shadow(0 4px 10px rgba(236, 72, 153, 0.6));
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+
+  .wheel-pointer::after {
+    content: '';
+    position: absolute;
+    top: -45px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.8);
+  }
+
+  #wheelCanvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow:
+      0 0 60px rgba(99, 102, 241, 0.3),
+      0 0 0 10px rgba(255, 255, 255, 0.05),
+      0 0 0 12px rgba(99, 102, 241, 0.3),
+      inset 0 0 40px rgba(0, 0, 0, 0.3);
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 1);
+  }
+
+  /* Center hub */
+  .wheel-hub {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e1b4b, #0f172a);
+    border: 4px solid rgba(99, 102, 241, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+    font-size: 2rem;
+    pointer-events: none;
+  }
+
+  /* SPIN BUTTON */
+  .spin-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .spin-btn {
+    padding: 18px 40px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+    text-transform: uppercase;
+    min-width: 220px;
+  }
+
+  .spin-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.7);
+  }
+
+  .spin-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .spin-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .reset-btn {
+    padding: 18px 28px;
+    border-radius: 16px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .reset-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .group-count-info {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .group-count-info strong {
+    color: #a5b4fc;
+    font-size: 1rem;
+  }
+
+  /* SIDE PANEL */
+  .side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .panel-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    opacity: 0.7;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+
+  .panel-header h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-header .count-badge {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+    font-weight: 800;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+  }
+
+  .panel-header .count-badge.green {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  .panel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .panel-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+  }
+
+  .panel-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  .panel-item .item-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .panel-item.done {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(99, 102, 241, 0.08));
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+
+  .panel-item.done .item-num {
+    background: linear-gradient(135deg, var(--success), #34d399);
+  }
+
+  .panel-item .item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .panel-item .item-name {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .panel-item .item-meta {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .panel-item .item-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .panel-item .item-badge.done-badge {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  .panel-empty {
+    text-align: center;
+    padding: 30px 15px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* WINNER MODAL */
+  .winner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .winner-overlay.show { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .winner-card {
+    background: linear-gradient(135deg, #1e1b4b, #0f172a);
+    border: 2px solid rgba(99, 102, 241, 0.5);
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 30px 100px rgba(99, 102, 241, 0.5);
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.5) translateY(50px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .winner-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--warning), var(--accent), var(--warning));
+    background-size: 200% auto;
+    border-radius: 28px 28px 0 0;
+    animation: shine 3s linear infinite;
+  }
+
+  .winner-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fcd34d;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .winner-emoji {
+    font-size: 3.5rem;
+    margin-bottom: 14px;
+    display: block;
+    animation: bounce 1.5s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .winner-name {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #a5b4fc, #f0abfc, #a5b4fc);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shine 3s linear infinite;
+    margin-bottom: 8px;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .winner-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .winner-sub strong { color: #c7d2fe; }
+
+  .winner-members-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #f0abfc;
+    margin-bottom: 12px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .winner-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .winner-member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    text-align: left;
+    transition: all 0.2s ease;
+  }
+
+  .winner-member:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(99, 102, 241, 0.35);
+  }
+
+  .winner-member.creator {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(236, 72, 153, 0.08));
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .winner-member .wm-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .winner-member.creator .wm-avatar {
+    background: linear-gradient(135deg, var(--warning), var(--accent));
+  }
+
+  .winner-member .wm-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .winner-member .wm-matrix {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+
+  .winner-member .wm-name {
+    font-size: 0.86rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+
+  .winner-member .wm-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    background: rgba(245, 158, 11, 0.25);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    flex-shrink: 0;
+  }
+
+  .winner-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .winner-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .winner-btn.primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  }
+
+  .winner-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.7);
+  }
+
+  /* CONFETTI */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    z-index: 999;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(110vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  /* LOADING */
+  .page-loading {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 4px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 40px; }
+    .container { gap: 18px; }
+    .wheel-section { padding: 20px 16px; border-radius: 20px; }
+    .wheel-hub { width: 70px; height: 70px; font-size: 1.6rem; }
+    .spin-btn {
+      padding: 16px 28px;
+      font-size: 1rem;
+      min-width: 180px;
+      width: 100%;
+    }
+    .reset-btn { width: 100%; justify-content: center; }
+    .winner-card { padding: 30px 22px; border-radius: 22px; }
+    .winner-emoji { font-size: 2.8rem; }
+    .winner-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="page-header">
+      <div class="badge-top">🎡 Spin The Wheel</div>
+      <h1>Pilih Group Untuk Bentang</h1>
+      <p>Tekan SPIN untuk pilih group secara rawak. Group yang dah dipilih tak akan keluar lagi.</p>
+    </div>
+
+    <!-- LOADING -->
+    <div class="page-loading" id="pageLoading">
+      <div class="spinner"></div>
+      <span>Sambung ke Firestore...</span>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="mainContent" style="display: none;">
+      <div class="main-grid">
+
+        <!-- WHEEL SECTION -->
+        <div class="wheel-section">
+          <div class="wheel-wrapper">
+            <div class="wheel-pointer" id="wheelPointer"></div>
+            <canvas id="wheelCanvas" width="1000" height="1000"></canvas>
+            <div class="wheel-hub">🎯</div>
+          </div>
+
+          <div class="spin-controls">
+            <button class="spin-btn" id="spinBtn">🎡 SPIN!</button>
+            <button class="reset-btn" id="resetBtn">🔄 Reset</button>
+          </div>
+
+          <div class="group-count-info" id="groupCountInfo">
+            Sedia untuk spin...
+          </div>
+        </div>
+
+        <!-- SIDE PANEL -->
+        <div class="side-panel">
+
+          <!-- GROUPS REMAINING -->
+          <div class="panel-section">
+            <div class="panel-header">
+              <h3>🎯 Belum Dipilih</h3>
+              <span class="count-badge" id="remainingCount">0</span>
+            </div>
+            <div class="panel-list" id="remainingList"></div>
+          </div>
+
+          <!-- GROUPS DONE -->
+          <div class="panel-section">
+            <div class="panel-header">
+              <h3>✅ Dah Bentang</h3>
+              <span class="count-badge green" id="doneCount">0</span>
+            </div>
+            <div class="panel-list" id="doneList"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WINNER MODAL -->
+  <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-card">
+      <div class="winner-label">
+        <span>🎉</span>
+        <span>Group Terpilih</span>
+        <span>🎉</span>
+      </div>
+      <span class="winner-emoji">🏆</span>
+      <div class="winner-name" id="winnerName">-</div>
+      <div class="winner-sub" id="winnerSub">-</div>
+
+      <div class="winner-members-title">
+        <span>👥 Ahli Group</span>
+        <span id="winnerMemberCount">0</span>
+      </div>
+      <div class="winner-members-list" id="winnerMembersList"></div>
+
+      <div class="winner-actions">
+        <button class="winner-btn primary" id="closeWinnerBtn">✅ OK, Tutup</button>
+      </div>
+    </div>
+  </div>
+
+<script type="module">
+  // ===== Firebase SDK =====
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwQY0qtOX4pzwIV3_csamxx1h6iGLSf5M",
+    authDomain: "osteambuilder.firebaseapp.com",
+    projectId: "osteambuilder",
+    storageBucket: "osteambuilder.firebasestorage.app",
+    messagingSenderId: "325636555428",
+    appId: "1:325636555428:web:e4ba419da7a8fcc8fb1c31",
+    measurementId: "G-THSWWQEZ9T"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ===== DATA PELAJAR =====
+  const ALL_STUDENTS = [
+    { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
+    { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
+    { matrix: "18DIT26F1011", name: "SOMROOT A/L I JOM" },
+    { matrix: "18DIT26F1012", name: "KHOR JINYI" },
+    { matrix: "18DIT26F1017", name: "TEOH QIAN HOOI" },
+    { matrix: "18DIT26F1024", name: "NURATHIRAH BADRIAH BINTI MOHD REDHUAN" },
+    { matrix: "18DIT26F1035", name: "KAIYISAH ADNIN BINTI ZUNNASRI" },
+    { matrix: "18DIT26F1047", name: "NURUL HIDAYAH SYAZWANI BINTI MOHD SAYUTI" },
+    { matrix: "18DIT26F1054", name: "NUR DEENA FARZANA BINTI ZAMRI" },
+    { matrix: "18DIT26F1067", name: "MUHAMMAD IRFAN HARITH BIN MOHD HERMAN" },
+    { matrix: "18DIT26F1078", name: "RAJA MUHAMMAD DANIEL HARRIS BIN RAJA MAZRUL KAMARULZAMAN" },
+    { matrix: "18DIT26F1084", name: "KAVIPRAKAASH A/L SHANKAR" },
+    { matrix: "18DIT26F1089", name: "SYED MUNIF ZAFRAN BIN SYED NUZUL FADZLI" },
+    { matrix: "18DIT26F1091", name: "NUR INSYIRAH BINTI MOHD IZUDDIN" },
+    { matrix: "18DIT26F1095", name: "YEOH CHENG YI" },
+    { matrix: "18DIT26F1097", name: "SITI FATIMAH DAYANA BINTI SAAD" },
+    { matrix: "18DIT26F1102", name: "NURIN SYAFIAH BINTI NORDIN" },
+    { matrix: "18DIT26F1103", name: "MUHAMAD HARIES BIN MUHAMAD HAFIZ" },
+    { matrix: "18DIT26F1114", name: "NUR AISYAH ARMA BINTI ARFAH" },
+    { matrix: "18DIT26F1115", name: "NUR FARAH FATIMAH BINTI ASHRUL" },
+    { matrix: "18DIT26F1121", name: "NHAM FON A/P PRACHOP" },
+    { matrix: "18DIT26F1122", name: "KATIRRAVAN A/L GANTHISPARAN" },
+    { matrix: "18DIT26F1127", name: "ONG SIM LOK" },
+    { matrix: "18DIT26F1128", name: "MUHAMMAD IKQRAM ZULFIQQAR BIN IDRIS" },
+    { matrix: "18DIT26F1132", name: "WAN AIMARR IQRAM BIN WAN NOORIZUANDI" },
+    { matrix: "18DIT26F1134", name: "ATHIRAH RAUQAH BINTI ROSLI" },
+    { matrix: "18DIT26F1144", name: "NURUL ZAHIRAH BINTI ISHAK" },
+    { matrix: "18DIT26F1152", name: "MUHAMMAD THAQIF ZAFRAN BIN RAHIM" },
+    { matrix: "18DIT26F1159", name: "NUR ALEYA QHAISARA BINTI MOHD ALI" },
+    { matrix: "18DIT26F1176", name: "ASRI BIN MUHD ABDUH" },
+    { matrix: "18DIT26F1183", name: "NURUL SYAFIQAH AINA BINTI MOHAMAD ANUAR" },
+    { matrix: "18DIT26F1192", name: "NUR NAJWA BALQIS BINTI MOHD ASMANIZAM" },
+    { matrix: "18DIT26F1198", name: "IZZAM HAKIMI BIN NOR AZELIN" },
+    { matrix: "18DIT26F1998", name: "ADAM DARWISY BIN MUHD HAFIZ" }
+  ];
+
+  // ===== DOM =====
+  const pageLoading = document.getElementById('pageLoading');
+  const mainContent = document.getElementById('mainContent');
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+  const spinBtn = document.getElementById('spinBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const groupCountInfo = document.getElementById('groupCountInfo');
+  const remainingCount = document.getElementById('remainingCount');
+  const doneCount = document.getElementById('doneCount');
+  const remainingList = document.getElementById('remainingList');
+  const doneList = document.getElementById('doneList');
+
+  const winnerOverlay = document.getElementById('winnerOverlay');
+  const winnerName = document.getElementById('winnerName');
+  const winnerSub = document.getElementById('winnerSub');
+  const winnerMemberCount = document.getElementById('winnerMemberCount');
+  const winnerMembersList = document.getElementById('winnerMembersList');
+  const closeWinnerBtn = document.getElementById('closeWinnerBtn');
+
+  // ===== STATE =====
+  let allGroups = [];
+  let remainingGroups = [];
+  let doneGroups = [];
+  let isSpinning = false;
+  let currentRotation = 0;
+
+  // Warna untuk wheel
+  const WHEEL_COLORS = [
+    '#6366f1', '#ec4899', '#10b981', '#f59e0b',
+    '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16',
+    '#f97316', '#14b8a6', '#a855f7', '#eab308'
+  ];
+
+  // ===== HELPERS =====
+  function initials(name) {
+    return String(name || '?').split(' ').filter(Boolean).slice(0, 2)
+      .map(w => w[0]).join('').toUpperCase();
+  }
+
+  function getStudentByMatrix(matrix) {
+    return ALL_STUDENTS.find(s => s.matrix === matrix);
+  }
+
+  function esc(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ===== LISTEN GROUPS =====
+  function listenGroups() {
+    onSnapshot(collection(db, "groups"), (snap) => {
+      allGroups = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+
+      // Sort by createdAt
+      allGroups.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+
+      console.log(`📊 Groups loaded: ${allGroups.length}`);
+
+      // Sync remaining & done
+      // Remaining: group yang belum spin
+      // Done: group yang dah spin (yang ada id dalam doneGroups)
+      const doneIds = new Set(doneGroups.map(g => g.id));
+      remainingGroups = allGroups.filter(g => !doneIds.has(g.id));
+      doneGroups = doneGroups.filter(dg => allGroups.some(g => g.id === dg.id));
+
+      renderAll();
+    }, (err) => {
+      console.error("Firestore error:", err);
+      pageLoading.innerHTML = `⚠️ Gagal sambung Firestore.<br><small>${err.message}</small>`;
+    });
+  }
+
+  // ===== DRAW WHEEL =====
+  function drawWheel() {
+    const size = canvas.width;
+    const center = size / 2;
+    const radius = center - 20;
+
+    ctx.clearRect(0, 0, size, size);
+
+    if (remainingGroups.length === 0) {
+      // Empty wheel
+      ctx.beginPath();
+      ctx.arc(center, center, radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+      ctx.font = 'bold 40px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('SEMUA DAH SPIN!', center, center);
+      return;
+    }
+
+    const n = remainingGroups.length;
+    const anglePerSlice = (Math.PI * 2) / n;
+
+    for (let i = 0; i < n; i++) {
+      const startAngle = i * anglePerSlice;
+      const endAngle = startAngle + anglePerSlice;
+
+      // Draw slice
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Text
+      ctx.save();
+      ctx.translate(center, center);
+      ctx.rotate(startAngle + anglePerSlice / 2);
+
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 34px "Segoe UI"';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 6;
+
+      // Truncate nama panjang
+      let groupName = remainingGroups[i].name;
+      if (groupName.length > 20) groupName = groupName.slice(0, 18) + '...';
+
+      ctx.fillText(groupName, radius - 30, 0);
+      ctx.restore();
+    }
+  }
+
+  // ===== APPLY ROTATION =====
+  function applyRotation(deg) {
+    canvas.style.transform = `rotate(${deg}deg)`;
+  }
+
+  // ===== SPIN =====
+  function spin() {
+    if (isSpinning || remainingGroups.length === 0) return;
+
+    isSpinning = true;
+    spinBtn.disabled = true;
+    spinBtn.textContent = '🎡 SPINNING...';
+
+    const n = remainingGroups.length;
+    const anglePerSlice = 360 / n;
+
+    // Pilih index rawak
+    const winnerIndex = Math.floor(Math.random() * n);
+
+    // Kira rotation
+    // Pointer di atas (12 o'clock = -90 dari canvas coordinate 0, tapi kita guna rotate)
+    // Canvas coordinate: 0 = kanan (3 o'clock)
+    // Pointer di atas = angle 270° dalam canvas coordinate (atau -90°)
+
+    // Slice i terletak antara i*anglePerSlice hingga (i+1)*anglePerSlice
+    // Midpoint slice i = (i + 0.5) * anglePerSlice
+    // Kita nak midpoint tu pusing ke atas (270°)
+
+    const midAngle = (winnerIndex + 0.5) * anglePerSlice;
+    // Untuk letak midAngle ke atas (270°), rotation = 270 - midAngle (mod 360)
+    let targetRotation = 270 - midAngle;
+
+    // Tambah spin extra (5-8 pusingan penuh)
+    const extraSpins = 5 + Math.floor(Math.random() * 4);
+    targetRotation += extraSpins * 360;
+
+    // Tambah sedikit offset rawak supaya tak sentiasa tepat di tengah
+    const randomOffset = (Math.random() - 0.5) * (anglePerSlice * 0.6);
+    targetRotation += randomOffset;
+
+    // Make sure rotation sentiasa ke depan (tak reverse)
+    while (targetRotation < currentRotation + extraSpins * 360) {
+      targetRotation += 360;
+    }
+
+    currentRotation = targetRotation;
+
+    // Animate
+    canvas.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 1)';
+    applyRotation(currentRotation);
+
+    // Tunggu animation habis
+    setTimeout(() => {
+      onSpinEnd(winnerIndex);
+    }, 5200);
+  }
+
+  // ===== SPIN END =====
+  function onSpinEnd(winnerIndex) {
+    const winner = remainingGroups[winnerIndex];
+
+    if (!winner) {
+      isSpinning = false;
+      spinBtn.disabled = false;
+      spinBtn.textContent = '🎡 SPIN!';
+      return;
+    }
+
+    console.log(`🎯 Winner: ${winner.name}`);
+
+    // Sound effect (bunyi guna Web Audio API)
+    playWinSound();
+
+    // Confetti
+    createConfetti();
+
+    // Pindah ke done
+    doneGroups.push(winner);
+    remainingGroups = remainingGroups.filter(g => g.id !== winner.id);
+
+    // Reset transition sementara supaya draw wheel baru tak animate
+    canvas.style.transition = 'none';
+    applyRotation(0);
+    currentRotation = 0;
+
+    // Re-draw wheel dengan group baru
+    setTimeout(() => {
+      drawWheel();
+      renderAll();
+
+      // Tunjuk winner modal
+      showWinnerModal(winner);
+
+      isSpinning = false;
+      spinBtn.disabled = false;
+      spinBtn.textContent = '🎡 SPIN!';
+    }, 100);
+  }
+
+  // ===== SHOW WINNER MODAL =====
+  function showWinnerModal(winner) {
+    const creator = getStudentByMatrix(winner.creator);
+    const members = winner.members || [];
+
+    winnerName.textContent = winner.name;
+    winnerSub.innerHTML = `Dicipta oleh <strong>${esc(creator ? creator.name : (winner.creatorName || 'Unknown'))}</strong>`;
+    winnerMemberCount.textContent = `${members.length} orang`;
+
+    winnerMembersList.innerHTML = members.map((matrix) => {
+      const s = getStudentByMatrix(matrix);
+      if (!s) return '';
+      const isC = matrix === winner.creator;
+      return `
+        <div class="winner-member ${isC ? 'creator' : ''}">
+          <div class="wm-avatar">${esc(initials(s.name))}</div>
+          <div class="wm-info">
+            <div class="wm-matrix">${esc(s.matrix)}</div>
+            <div class="wm-name">${esc(s.name)}</div>
+          </div>
+          ${isC ? '<span class="wm-badge">👑 CREATOR</span>' : ''}
+        </div>
+      `;
+    }).join('');
+
+    winnerOverlay.classList.add('show');
+  }
+
+  closeWinnerBtn.addEventListener('click', () => {
+    winnerOverlay.classList.remove('show');
+  });
+
+  winnerOverlay.addEventListener('click', (e) => {
+    if (e.target === winnerOverlay) {
+      winnerOverlay.classList.remove('show');
+    }
+  });
+
+  // ===== RENDER SIDE PANELS =====
+  function renderAll() {
+    // Update counts
+    remainingCount.textContent = remainingGroups.length;
+    doneCount.textContent = doneGroups.length;
+
+    // Update info
+    if (remainingGroups.length === 0) {
+      groupCountInfo.innerHTML = `🎉 Semua group dah spin! Tekan <strong>Reset</strong> untuk mula semula.`;
+    } else if (doneGroups.length === 0) {
+      groupCountInfo.innerHTML = `<strong>${remainingGroups.length}</strong> group sedia untuk spin. Tekan <strong>SPIN!</strong>`;
+    } else {
+      groupCountInfo.innerHTML = `Tinggal <strong>${remainingGroups.length}</strong> group · <strong>${doneGroups.length}</strong> dah bentang`;
+    }
+
+    // Render remaining list
+    if (remainingGroups.length === 0) {
+      remainingList.innerHTML = `<div class="panel-empty">Tiada group</div>`;
+    } else {
+      remainingList.innerHTML = remainingGroups.map((g, i) => `
+        <div class="panel-item">
+          <div class="item-num">${i + 1}</div>
+          <div class="item-info">
+            <div class="item-name">${esc(g.name)}</div>
+            <div class="item-meta">${(g.members || []).length}/${g.size} ahli</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render done list
+    if (doneGroups.length === 0) {
+      doneList.innerHTML = `<div class="panel-empty">Belum ada group spin</div>`;
+    } else {
+      doneList.innerHTML = doneGroups.map((g, i) => `
+        <div class="panel-item done">
+          <div class="item-num">${i + 1}</div>
+          <div class="item-info">
+            <div class="item-name">${esc(g.name)}</div>
+            <div class="item-meta">${(g.members || []).length} ahli</div>
+          </div>
+          <span class="item-badge done-badge">✅ BENTANG</span>
+        </div>
+      `).join('');
+    }
+
+    // Draw wheel
+    drawWheel();
+  }
+
+  // ===== RESET =====
+  function reset() {
+    if (isSpinning) return;
+    if (!confirm('Reset semua? Semua group akan masuk balik dalam wheel.')) return;
+
+    doneGroups = [];
+    remainingGroups = [...allGroups];
+
+    canvas.style.transition = 'none';
+    applyRotation(0);
+    currentRotation = 0;
+
+    setTimeout(() => {
+      drawWheel();
+      renderAll();
+    }, 50);
+  }
+
+  resetBtn.addEventListener('click', reset);
+
+  // ===== CONFETTI =====
+  function createConfetti() {
+    const colors = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
+    const container = document.body;
+
+    for (let i = 0; i < 80; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.width = (Math.random() * 10 + 6) + 'px';
+      confetti.style.height = (Math.random() * 10 + 6) + 'px';
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+
+      container.appendChild(confetti);
+
+      setTimeout(() => confetti.remove(), 5000);
+    }
+  }
+
+  // ===== WIN SOUND =====
+  function playWinSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Melody: C-E-G-C
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+
+        const startTime = audioCtx.currentTime + i * 0.12;
+        gain.gain.setValueAtTime(0.3, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + 0.3);
+      });
+    } catch (e) {
+      // Ignore audio errors
+    }
+  }
+
+  // ===== SPIN BUTTON =====
+  spinBtn.addEventListener('click', spin);
+
+  // ===== SPACE KEY = SPIN =====
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !isSpinning && !winnerOverlay.classList.contains('show')) {
+      e.preventDefault();
+      spin();
+    }
+  });
+
+  // ===== INIT =====
+  (function init() {
+    console.log("🎡 Spin Wheel init...");
+    listenGroups();
+
+    pageLoading.style.display = 'none';
+    mainContent.style.display = 'block';
+  })();
+</script>
+</body>
+</html>
