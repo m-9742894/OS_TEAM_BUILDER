@@ -476,6 +476,8 @@
     transition: all 0.25s ease;
     cursor: pointer;
     display: block;
+    width: 100%;
+    color: var(--text);
   }
   .upload-box:hover {
     background: var(--card-hover);
@@ -1125,20 +1127,6 @@
         <div class="my-group-box" id="myGroupBox"></div>
       </div>
 
-      <!-- GROUP SECTION -->
-      <div class="section" style="margin-top: 20px;">
-        <div class="section-header">
-          <h2>
-            Senarai Group
-            <span class="badge" id="groupCountBadge">0</span>
-          </h2>
-          <button class="create-btn" id="createGroupBtn">
-            ➕ Cipta Group
-          </button>
-        </div>
-        <div class="group-list" id="groupList"></div>
-      </div>
-
       <!-- UPLOAD SECTION -->
       <div class="section" style="margin-top: 20px;">
         <div class="section-header">
@@ -1172,6 +1160,20 @@
             <div class="desc" style="font-size: 0.78rem;">Upload fail pertama anda</div>
           </div>
         </div>
+      </div>
+
+      <!-- GROUP SECTION -->
+      <div class="section" style="margin-top: 20px;">
+        <div class="section-header">
+          <h2>
+            Senarai Group
+            <span class="badge" id="groupCountBadge">0</span>
+          </h2>
+          <button class="create-btn" id="createGroupBtn">
+            ➕ Cipta Group
+          </button>
+        </div>
+        <div class="group-list" id="groupList"></div>
       </div>
     </div>
 
@@ -1290,8 +1292,8 @@
 
   // ⚙️ Cloudinary Config
   const CLOUDINARY_CLOUD_NAME = 'tt0ofn22';
-  const CLOUDINARY_UPLOAD_PRESET = 'osteam_upload'; // ⚠️ Pastikan nama preset ini sama dengan yang awak buat
-  const CLOUDINARY_FOLDER = 'osteam-uploads';       // optional
+  const CLOUDINARY_UPLOAD_PRESET = 'osteam_upload'; // ⚠️ Pastikan nama preset ini sama
+  const CLOUDINARY_FOLDER = 'osteam-uploads';
 
   // ===== DATA PELAJAR (34 orang) =====
   const ALL_STUDENTS = [
@@ -2030,9 +2032,6 @@
     }
   }
 
-  // Simpan list fail dalam localStorage (per device)
-  // Untuk senarai fail kongsi, kena guna backend/Firestore.
-  // Sementara ni kita guna localStorage — jadi fail nampak pada device sama sahaja.
   const FILE_STORAGE_KEY = 'osteam_uploaded_files';
 
   function getUploadedFiles() {
@@ -2050,7 +2049,7 @@
 
   function addUploadedFile(fileMeta) {
     const files = getUploadedFiles();
-    files.unshift(fileMeta); // newest first
+    files.unshift(fileMeta);
     saveUploadedFiles(files);
   }
 
@@ -2068,8 +2067,7 @@
         folder: CLOUDINARY_FOLDER,
         sources: ['local', 'url', 'camera'],
         multiple: false,
-        maxFileSize: 10000000, // 10MB
-        clientAllowedFormats: null, // semua format
+        maxFileSize: 10000000,
         resourceType: 'auto',
         showAdvancedOptions: false,
         cropping: false,
@@ -2115,13 +2113,6 @@
           showUploadStatus(`✅ Berjaya upload: ${fileMeta.name}`, 'success');
           showToast(`✅ Fail "${fileMeta.name}" berjaya diupload`, 'success');
           renderFileList();
-
-          // Buka link view di tab baru (optional — buang kalau tak nak)
-          // window.open(info.secure_url, '_blank');
-        }
-
-        if (result && result.event === 'close') {
-          // Widget ditutup
         }
       }
     );
@@ -2164,14 +2155,12 @@
       else if (['MP4', 'MOV', 'AVI', 'MKV'].includes(ext)) icon = '🎬';
       else if (['MP3', 'WAV', 'M4A'].includes(ext)) icon = '🎵';
 
-      // Untuk gambar, tunjuk thumbnail (Cloudinary auto-generate)
       let iconContent = icon;
       if (isImage && f.resourceType === 'image') {
         const thumbUrl = f.url.replace('/upload/', '/upload/w_80,h_80,c_fill/');
         iconContent = `<img src="${thumbUrl}" alt="" loading="lazy" />`;
       }
 
-      // Download URL untuk Cloudinary
       const downloadUrl = f.url.replace('/upload/', '/upload/fl_attachment/');
 
       return `
@@ -2190,7 +2179,6 @@
       `;
     }).join('');
 
-    // Attach delete handlers
     fileList.querySelectorAll('[data-delete-idx]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const idx = Number(btn.dataset.deleteIdx);
@@ -2293,7 +2281,6 @@
       renderProfile();
       renderFileList();
 
-      // Init Cloudinary widget (tunggu script load siap)
       setTimeout(() => {
         cloudinaryWidget = initCloudinaryWidget();
       }, 500);
