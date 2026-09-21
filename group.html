@@ -740,7 +740,6 @@
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
   }
 
-  /* Size selector — 2 options sahaja (3 atau 4) */
   .size-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -797,7 +796,6 @@
     color: var(--text-muted);
   }
 
-  /* Available students info */
   .available-info {
     background: rgba(99, 102, 241, 0.1);
     border: 1px solid rgba(99, 102, 241, 0.25);
@@ -1288,8 +1286,8 @@
   // ===== KONFIG =====
   const VALID_SIZES = [3, 4];
 
-  // 🔴 GANTI DENGAN URL APPS SCRIPT ANDA
-  const UPLOAD_PROXY_URL = 'https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec';
+  // ✅ URL Apps Script awak
+  const UPLOAD_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyzkjtr3xGTtygRgPb4lX-iVbl0LPwe1SdSWKjnbRVBCM0pJ0A6ekLJZiTsx4Ndvdvg/exec';
 
   // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
   const ALL_STUDENTS = [
@@ -2043,14 +2041,8 @@
   async function handleUpload(file) {
     if (!file) return;
 
-    // Validate size (10MB)
     if (file.size > 10 * 1024 * 1024) {
       showUploadStatus('❌ Fail terlalu besar. Max 10MB.', 'error');
-      return;
-    }
-
-    if (UPLOAD_PROXY_URL.includes('AKfycbxxxxxxxx')) {
-      showUploadStatus('⚠️ Upload belum setup. Sila masukkan URL Apps Script.', 'error');
       return;
     }
 
@@ -2089,17 +2081,6 @@
   }
 
   async function loadFileList() {
-    if (UPLOAD_PROXY_URL.includes('AKfycbxxxxxxxx')) {
-      fileList.innerHTML = `
-        <div class="empty-state" style="padding: 30px 20px;">
-          <div class="emoji" style="font-size: 1.8rem;">⚠️</div>
-          <div class="title" style="font-size: 0.9rem;">Upload belum setup</div>
-          <div class="desc" style="font-size: 0.78rem;">Sila masukkan URL Apps Script dalam code</div>
-        </div>
-      `;
-      return;
-    }
-
     try {
       fileList.innerHTML = `
         <div class="empty-state" style="padding: 30px 20px;">
