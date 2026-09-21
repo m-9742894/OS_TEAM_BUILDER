@@ -68,7 +68,6 @@
     gap: 24px;
   }
 
-  /* HEADER */
   .page-header {
     text-align: center;
     padding: 10px 0 6px;
@@ -112,7 +111,6 @@
     margin: 0 auto;
   }
 
-  /* TOP STATS */
   .top-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -178,14 +176,6 @@
   .stat-card.yellow .stat-value { background: linear-gradient(135deg, #fcd34d, #fbbf24); -webkit-background-clip: text; background-clip: text; }
   .stat-card.pink .stat-value { background: linear-gradient(135deg, #f0abfc, #f472b6); -webkit-background-clip: text; background-clip: text; }
 
-  /* MAIN GRID */
-  .main-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  /* SECTION */
   .section {
     display: flex;
     flex-direction: column;
@@ -224,7 +214,6 @@
     border: 1px solid rgba(99, 102, 241, 0.3);
   }
 
-  /* GROUP GRID */
   .group-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -267,7 +256,6 @@
     background: linear-gradient(90deg, var(--success), #34d399);
   }
 
-  /* Group header */
   .group-header {
     display: flex;
     align-items: flex-start;
@@ -318,7 +306,6 @@
     color: #c7d2fe;
   }
 
-  /* Status badge */
   .status-badge {
     padding: 5px 11px;
     border-radius: 999px;
@@ -342,7 +329,6 @@
     border: 1px solid rgba(245, 158, 11, 0.4);
   }
 
-  /* Progress bar */
   .progress-wrap {
     display: flex;
     flex-direction: column;
@@ -381,7 +367,6 @@
     background: linear-gradient(90deg, var(--success), #34d399);
   }
 
-  /* Members */
   .members-label {
     font-size: 0.72rem;
     font-weight: 800;
@@ -473,7 +458,6 @@
     border: 1px solid rgba(245, 158, 11, 0.4);
   }
 
-  /* Empty slots */
   .empty-slot {
     display: flex;
     align-items: center;
@@ -505,6 +489,156 @@
     font-style: italic;
   }
 
+  /* ===== GROUP FILES SECTION ===== */
+  .group-files-section {
+    margin-top: 4px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .group-files-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #f0abfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .group-files-label .files-count {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(236, 72, 153, 0.2);
+    color: #f0abfc;
+    border: 1px solid rgba(236, 72, 153, 0.35);
+    font-weight: 800;
+  }
+
+  .group-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .group-file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .group-file-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(236, 72, 153, 0.35);
+    transform: translateX(2px);
+  }
+
+  .group-file-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #f472b6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .group-file-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .group-file-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .group-file-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .group-file-meta {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .group-file-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .group-file-btn {
+    padding: 5px 9px;
+    border-radius: 7px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+    font-size: 0.62rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .group-file-btn:hover {
+    background: rgba(99, 102, 241, 0.35);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .group-file-btn.download {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #6ee7b7;
+  }
+
+  .group-file-btn.download:hover {
+    background: rgba(16, 185, 129, 0.35);
+    color: #fff;
+  }
+
+  .group-files-empty {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
   /* EMPTY STATE */
   .empty-state {
     text-align: center;
@@ -532,7 +666,6 @@
     font-size: 0.88rem;
   }
 
-  /* STUDENTS WITHOUT GROUP */
   .students-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -591,7 +724,6 @@
     margin-top: 1px;
   }
 
-  /* Loading */
   .page-loading {
     text-align: center;
     padding: 80px 20px;
@@ -615,7 +747,6 @@
     to { transform: rotate(360deg); }
   }
 
-  /* Footer */
   .footer {
     text-align: center;
     padding: 20px;
@@ -642,7 +773,6 @@
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
-  /* Responsive */
   @media (max-width: 900px) {
     .top-stats {
       grid-template-columns: repeat(2, 1fr);
@@ -674,6 +804,11 @@
     .member-row .m-avatar,
     .empty-slot .e-avatar { width: 30px; height: 30px; font-size: 0.68rem; }
     .member-row .m-name { font-size: 0.8rem; }
+
+    .group-file-item { padding: 7px 9px; gap: 8px; }
+    .group-file-icon { width: 28px; height: 28px; font-size: 0.85rem; }
+    .group-file-name { font-size: 0.72rem; }
+    .group-file-btn { padding: 4px 7px; font-size: 0.58rem; }
   }
 
   @media (max-width: 380px) {
@@ -697,7 +832,7 @@
     <div class="page-header">
       <div class="badge-top">📊 Dashboard Overview</div>
       <h1>Papan Pemantauan Group</h1>
-      <p>Paparan penuh semua group, ahli, dan pelajar yang belum menyertai mana-mana group</p>
+      <p>Paparan penuh semua group, ahli, dan fail yang diupload ke setiap group</p>
     </div>
 
     <!-- LOADING -->
@@ -727,9 +862,9 @@
           <div class="stat-label">Belum Join</div>
         </div>
         <div class="stat-card pink">
-          <div class="stat-icon">🏆</div>
-          <div class="stat-value" id="statGroups">0</div>
-          <div class="stat-label">Total Group</div>
+          <div class="stat-icon">📁</div>
+          <div class="stat-value" id="statFiles">0</div>
+          <div class="stat-label">Total Fail</div>
         </div>
       </div>
 
@@ -792,7 +927,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
+  // ===== DATA PELAJAR =====
   const ALL_STUDENTS = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
@@ -836,7 +971,7 @@
   const statTotalStudents = document.getElementById('statTotalStudents');
   const statJoined = document.getElementById('statJoined');
   const statNotJoined = document.getElementById('statNotJoined');
-  const statGroups = document.getElementById('statGroups');
+  const statFiles = document.getElementById('statFiles');
   const groupCountBadge = document.getElementById('groupCountBadge');
   const notJoinedBadge = document.getElementById('notJoinedBadge');
   const groupGrid = document.getElementById('groupGrid');
@@ -844,7 +979,9 @@
 
   // ===== STATE =====
   let groups = [];
+  let uploads = [];
   let unsubGroups = null;
+  let unsubUploads = null;
 
   // ===== HELPERS =====
   function initials(name) {
@@ -856,14 +993,44 @@
     return ALL_STUDENTS.find(s => s.matrix === matrix);
   }
 
-  // ===== ESCAPE HTML =====
   function esc(str) {
-    return String(str)
+    return String(str || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  function getFileIcon(ext) {
+    ext = (ext || '').toUpperCase();
+    if (ext === 'PDF') return { icon: '📕', isImage: false };
+    if (['DOC', 'DOCX'].includes(ext)) return { icon: '📘', isImage: false };
+    if (['PPT', 'PPTX'].includes(ext)) return { icon: '📙', isImage: false };
+    if (['XLS', 'XLSX'].includes(ext)) return { icon: '📗', isImage: false };
+    if (['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP', 'SVG'].includes(ext)) return { icon: '🖼️', isImage: true };
+    if (['ZIP', 'RAR', '7Z'].includes(ext)) return { icon: '📦', isImage: false };
+    if (['MP4', 'MOV', 'AVI', 'MKV'].includes(ext)) return { icon: '🎬', isImage: false };
+    if (['MP3', 'WAV', 'M4A'].includes(ext)) return { icon: '🎵', isImage: false };
+    return { icon: '📄', isImage: false };
+  }
+
+  function formatSize(bytes) {
+    if (!bytes) return '0 B';
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '-';
+    try {
+      return new Date(iso).toLocaleDateString('ms-MY', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+    } catch (e) {
+      return '-';
+    }
   }
 
   // ===== LISTEN GROUPS (real-time) =====
@@ -876,8 +1043,25 @@
       }));
       renderAll();
     }, (err) => {
-      console.error("Firestore error:", err);
+      console.error("Firestore groups error:", err);
       pageLoading.innerHTML = `⚠️ Gagal sambung Firestore.<br><small>${err.message}</small>`;
+    });
+  }
+
+  // ===== LISTEN UPLOADS (real-time) =====
+  function listenUploads() {
+    const q = query(collection(db, "uploads"), orderBy("createdAt", "desc"));
+    unsubUploads = onSnapshot(q, (snap) => {
+      uploads = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+      renderAll();
+    }, (err) => {
+      console.error("Firestore uploads error:", err);
+      // Kalau error (contoh: collection belum ada), just ignore
+      uploads = [];
+      renderAll();
     });
   }
 
@@ -893,10 +1077,72 @@
     statTotalStudents.textContent = total;
     statJoined.textContent = joined;
     statNotJoined.textContent = notJoined;
-    statGroups.textContent = groups.length;
+    statFiles.textContent = uploads.length;
 
     groupCountBadge.textContent = `${groups.length} Group`;
     notJoinedBadge.textContent = `${notJoined} Pelajar`;
+  }
+
+  // ===== RENDER FILES PER GROUP =====
+  function getFilesForGroup(groupId) {
+    return uploads.filter(u => u.groupId === groupId);
+  }
+
+  function renderGroupFilesHTML(groupId) {
+    const files = getFilesForGroup(groupId);
+
+    if (files.length === 0) {
+      return `
+        <div class="group-files-section">
+          <div class="group-files-label">
+            <span>📁 Fail Kumpulan</span>
+            <span class="files-count">0</span>
+          </div>
+          <div class="group-files-empty">Belum ada fail diupload</div>
+        </div>
+      `;
+    }
+
+    const filesHTML = files.map(f => {
+      const ext = (f.name || '').split('.').pop() || '';
+      const { icon, isImage } = getFileIcon(ext);
+
+      let iconContent = icon;
+      if (isImage && f.resourceType === 'image' && f.url) {
+        const thumbUrl = f.url.replace('/upload/', '/upload/w_80,h_80,c_fill/');
+        iconContent = `<img src="${thumbUrl}" alt="" loading="lazy" />`;
+      }
+
+      const downloadUrl = f.url ? f.url.replace('/upload/', '/upload/fl_attachment/') : '#';
+
+      return `
+        <div class="group-file-item">
+          <div class="group-file-icon">${iconContent}</div>
+          <div class="group-file-info">
+            <div class="group-file-name" title="${esc(f.name)}">${esc(f.name)}</div>
+            <div class="group-file-meta">
+              ${esc(f.uploadedBy || 'Unknown')} · ${formatSize(f.size)} · ${formatDate(f.uploadedAt)}
+            </div>
+          </div>
+          <div class="group-file-actions">
+            <a class="group-file-btn" href="${esc(f.url)}" target="_blank" rel="noopener" title="Buka">👁️</a>
+            <a class="group-file-btn download" href="${esc(downloadUrl)}" target="_blank" rel="noopener" title="Download">⬇️</a>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="group-files-section">
+        <div class="group-files-label">
+          <span>📁 Fail Kumpulan</span>
+          <span class="files-count">${files.length}</span>
+        </div>
+        <div class="group-files-list">
+          ${filesHTML}
+        </div>
+      </div>
+    `;
   }
 
   // ===== RENDER GROUP CARDS =====
@@ -976,6 +1222,8 @@
             ${membersHTML}
             ${emptyHTML}
           </div>
+
+          ${renderGroupFilesHTML(g.id)}
         </div>
       `;
     }).join('');
@@ -1020,6 +1268,7 @@
   // ===== INIT =====
   (function init() {
     listenGroups();
+    listenUploads();
     pageLoading.style.display = 'none';
     mainContent.style.display = 'flex';
   })();
