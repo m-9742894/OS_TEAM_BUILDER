@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dashboard Group — Register Group</title>
+<!-- Cloudinary Upload Widget -->
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script>
 <style>
   * {
     margin: 0;
@@ -70,7 +72,6 @@
     padding-bottom: 40px;
   }
 
-  /* LOADING */
   .page-loading {
     text-align: center;
     padding: 60px 20px;
@@ -89,7 +90,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* PROFILE */
   .profile {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.15));
     border: 1px solid rgba(99, 102, 241, 0.3);
@@ -180,7 +180,6 @@
     border-color: rgba(239, 68, 68, 0.3);
   }
 
-  /* STATS */
   .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -218,7 +217,6 @@
   .stat-card.joined { border-color: rgba(16, 185, 129, 0.3); }
   .stat-card.not-joined { border-color: rgba(245, 158, 11, 0.3); }
 
-  /* SECTION */
   .section {
     display: flex;
     flex-direction: column;
@@ -272,7 +270,6 @@
     box-shadow: none;
   }
 
-  /* GROUP LIST */
   .group-list {
     display: flex;
     flex-direction: column;
@@ -434,7 +431,6 @@
   }
   .empty-state .desc { font-size: 0.85rem; }
 
-  /* ===== MY GROUP BOX ===== */
   .my-group-box {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.1));
     border: 1px solid rgba(16, 185, 129, 0.35);
@@ -471,7 +467,6 @@
   }
   .my-group-box .box-sub strong { color: #c7d2fe; }
 
-  /* ===== UPLOAD SECTION ===== */
   .upload-box {
     background: var(--card);
     border: 2px dashed rgba(99, 102, 241, 0.4);
@@ -482,8 +477,7 @@
     cursor: pointer;
     display: block;
   }
-  .upload-box:hover,
-  .upload-box.dragover {
+  .upload-box:hover {
     background: var(--card-hover);
     border-color: var(--primary);
     transform: translateY(-2px);
@@ -502,9 +496,6 @@
   .upload-box .upload-desc {
     font-size: 0.78rem;
     color: var(--text-muted);
-  }
-  .upload-box input[type="file"] {
-    display: none;
   }
 
   .upload-status {
@@ -534,7 +525,6 @@
     color: #a5b4fc;
   }
 
-  /* ===== FILE LIST ===== */
   .file-list {
     display: flex;
     flex-direction: column;
@@ -565,6 +555,12 @@
     font-size: 1.1rem;
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    overflow: hidden;
+  }
+  .file-item .file-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .file-item .file-info { flex: 1; min-width: 0; }
   .file-item .file-name {
@@ -614,8 +610,16 @@
     background: rgba(16, 185, 129, 0.3);
     color: #fff;
   }
+  .file-item .file-btn.delete {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+  }
+  .file-item .file-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fff;
+  }
 
-  /* Refresh btn */
   .refresh-btn {
     padding: 6px 12px;
     border-radius: 8px;
@@ -636,7 +640,6 @@
     border-color: rgba(99, 102, 241, 0.4);
   }
 
-  /* MODAL */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -1144,12 +1147,11 @@
             Upload Fail Kumpulan
           </h2>
         </div>
-        <label class="upload-box" id="uploadBox">
-          <input type="file" id="fileInput" />
+        <button class="upload-box" id="uploadBox" type="button">
           <span class="upload-icon">📤</span>
-          <div class="upload-title">Klik atau drag fail ke sini</div>
+          <div class="upload-title">Klik untuk pilih fail</div>
           <div class="upload-desc">Max 10MB · PDF, DOCX, PPT, IMG, ZIP, dll</div>
-        </label>
+        </button>
         <div class="upload-status" id="uploadStatus"></div>
       </div>
 
@@ -1286,10 +1288,12 @@
   // ===== KONFIG =====
   const VALID_SIZES = [3, 4];
 
-  // ✅ URL Apps Script awak
-  const UPLOAD_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyzkjtr3xGTtygRgPb4lX-iVbl0LPwe1SdSWKjnbRVBCM0pJ0A6ekLJZiTsx4Ndvdvg/exec';
+  // ⚙️ Cloudinary Config
+  const CLOUDINARY_CLOUD_NAME = 'tt0ofn22';
+  const CLOUDINARY_UPLOAD_PRESET = 'osteam_upload'; // ⚠️ Pastikan nama preset ini sama dengan yang awak buat
+  const CLOUDINARY_FOLDER = 'osteam-uploads';       // optional
 
-  // ===== DATA PELAJAR (34 orang — termasuk ADAM) =====
+  // ===== DATA PELAJAR (34 orang) =====
   const ALL_STUDENTS = [
     { matrix: "18DIT26F1005", name: "TEOH RUI HENG" },
     { matrix: "18DIT26F1006", name: "MUHAMAD NAUFAL BIN MOHD NIZAM" },
@@ -1365,7 +1369,6 @@
   const myGroupBox = document.getElementById('myGroupBox');
 
   const uploadBox = document.getElementById('uploadBox');
-  const fileInput = document.getElementById('fileInput');
   const uploadStatus = document.getElementById('uploadStatus');
   const fileList = document.getElementById('fileList');
   const fileListBadge = document.getElementById('fileListBadge');
@@ -1378,6 +1381,7 @@
   let groups = [];
   let selectedSize = 3;
   let unsubGroups = null;
+  let cloudinaryWidget = null;
 
   // ===== HELPERS =====
   function initials(name) {
@@ -1850,7 +1854,7 @@
 
     const existingNames = groups.map(g => g.name.toLowerCase());
     if (existingNames.includes(name.toLowerCase())) {
-      showToast('❌ Nama group dah wujud', 'error');
+      showToast('❌ Nama group sudah wujud', 'error');
       return;
     }
 
@@ -2013,20 +2017,8 @@
   }
 
   // ==================================================
-  // ===== UPLOAD FILE TO GOOGLE DRIVE (via Apps Script)
+  // ===== CLOUDINARY UPLOAD WIDGET =====
   // ==================================================
-
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
 
   function showUploadStatus(msg, type) {
     uploadStatus.textContent = msg;
@@ -2038,148 +2030,200 @@
     }
   }
 
-  async function handleUpload(file) {
-    if (!file) return;
+  // Simpan list fail dalam localStorage (per device)
+  // Untuk senarai fail kongsi, kena guna backend/Firestore.
+  // Sementara ni kita guna localStorage — jadi fail nampak pada device sama sahaja.
+  const FILE_STORAGE_KEY = 'osteam_uploaded_files';
 
-    if (file.size > 10 * 1024 * 1024) {
-      showUploadStatus('❌ Fail terlalu besar. Max 10MB.', 'error');
+  function getUploadedFiles() {
+    try {
+      const raw = localStorage.getItem(FILE_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveUploadedFiles(files) {
+    localStorage.setItem(FILE_STORAGE_KEY, JSON.stringify(files));
+  }
+
+  function addUploadedFile(fileMeta) {
+    const files = getUploadedFiles();
+    files.unshift(fileMeta); // newest first
+    saveUploadedFiles(files);
+  }
+
+  // ===== INIT CLOUDINARY WIDGET =====
+  function initCloudinaryWidget() {
+    if (typeof cloudinary === 'undefined') {
+      console.error('Cloudinary widget belum loaded');
+      return null;
+    }
+
+    const widget = cloudinary.createUploadWidget(
+      {
+        cloudName: CLOUDINARY_CLOUD_NAME,
+        uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+        folder: CLOUDINARY_FOLDER,
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        maxFileSize: 10000000, // 10MB
+        clientAllowedFormats: null, // semua format
+        resourceType: 'auto',
+        showAdvancedOptions: false,
+        cropping: false,
+        styles: {
+          palette: {
+            window: '#0f172a',
+            windowBorder: '#6366f1',
+            tabIcon: '#a5b4fc',
+            menuIcons: '#f1f5f9',
+            textDark: '#f1f5f9',
+            textLight: '#94a3b8',
+            link: '#6366f1',
+            action: '#ec4899',
+            inactiveTabIcon: '#94a3b8',
+            error: '#ef4444',
+            inProgress: '#6366f1',
+            complete: '#10b981',
+            sourceBg: '#1e1b4b'
+          }
+        }
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Cloudinary error:', error);
+          showUploadStatus(`❌ Gagal upload: ${error.message || 'Unknown error'}`, 'error');
+          return;
+        }
+
+        if (result && result.event === 'success') {
+          const info = result.info;
+          const fileMeta = {
+            publicId: info.public_id,
+            url: info.secure_url,
+            name: info.original_filename + (info.format ? '.' + info.format : ''),
+            size: info.bytes,
+            format: info.format,
+            resourceType: info.resource_type,
+            uploadedAt: new Date().toISOString(),
+            uploadedBy: currentStudent ? currentStudent.name : 'Unknown'
+          };
+
+          addUploadedFile(fileMeta);
+          showUploadStatus(`✅ Berjaya upload: ${fileMeta.name}`, 'success');
+          showToast(`✅ Fail "${fileMeta.name}" berjaya diupload`, 'success');
+          renderFileList();
+
+          // Buka link view di tab baru (optional — buang kalau tak nak)
+          // window.open(info.secure_url, '_blank');
+        }
+
+        if (result && result.event === 'close') {
+          // Widget ditutup
+        }
+      }
+    );
+
+    return widget;
+  }
+
+  // ===== RENDER FILE LIST =====
+  function renderFileList() {
+    const files = getUploadedFiles();
+    fileListBadge.textContent = files.length;
+
+    if (files.length === 0) {
+      fileList.innerHTML = `
+        <div class="empty-state" style="padding: 30px 20px;">
+          <div class="emoji" style="font-size: 1.8rem;">📭</div>
+          <div class="title" style="font-size: 0.9rem;">Belum ada fail</div>
+          <div class="desc" style="font-size: 0.78rem;">Upload fail pertama anda</div>
+        </div>
+      `;
       return;
     }
 
-    showUploadStatus(`⏳ Sedang upload "${file.name}"...`, 'loading');
-
-    try {
-      const base64 = await fileToBase64(file);
-
-      const response = await fetch(UPLOAD_PROXY_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify({
-          file: base64,
-          name: file.name,
-          contentType: file.type || 'application/octet-stream'
-        })
+    fileList.innerHTML = files.map((f, idx) => {
+      const sizeMB = (f.size / 1024 / 1024).toFixed(2);
+      const date = new Date(f.uploadedAt).toLocaleDateString('ms-MY', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
       });
+      const ext = (f.name.split('.').pop() || '').toUpperCase();
 
-      const result = await response.json();
+      let icon = '📄';
+      let isImage = false;
+      if (['PDF'].includes(ext)) icon = '📕';
+      else if (['DOC', 'DOCX'].includes(ext)) icon = '📘';
+      else if (['PPT', 'PPTX'].includes(ext)) icon = '📙';
+      else if (['XLS', 'XLSX'].includes(ext)) icon = '📗';
+      else if (['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP', 'SVG'].includes(ext)) { icon = '🖼️'; isImage = true; }
+      else if (['ZIP', 'RAR', '7Z'].includes(ext)) icon = '📦';
+      else if (['MP4', 'MOV', 'AVI', 'MKV'].includes(ext)) icon = '🎬';
+      else if (['MP3', 'WAV', 'M4A'].includes(ext)) icon = '🎵';
 
-      if (result.success) {
-        showUploadStatus(`✅ Berjaya upload: ${file.name}`, 'success');
-        showToast(`✅ Fail "${file.name}" berjaya diupload`, 'success');
-        loadFileList();
-      } else {
-        showUploadStatus(`❌ Gagal: ${result.error || 'Unknown error'}`, 'error');
-      }
-    } catch (err) {
-      console.error('Upload error:', err);
-      showUploadStatus(`❌ Gagal upload: ${err.message}`, 'error');
-    }
-
-    fileInput.value = '';
-  }
-
-  async function loadFileList() {
-    try {
-      fileList.innerHTML = `
-        <div class="empty-state" style="padding: 30px 20px;">
-          <div class="emoji" style="font-size: 1.8rem;">⏳</div>
-          <div class="title" style="font-size: 0.9rem;">Memuatkan fail...</div>
-        </div>
-      `;
-
-      const response = await fetch(UPLOAD_PROXY_URL + '?t=' + Date.now());
-      const result = await response.json();
-
-      if (!result.success) throw new Error(result.error || 'Failed to load');
-
-      const files = result.files || [];
-      fileListBadge.textContent = files.length;
-
-      if (files.length === 0) {
-        fileList.innerHTML = `
-          <div class="empty-state" style="padding: 30px 20px;">
-            <div class="emoji" style="font-size: 1.8rem;">📭</div>
-            <div class="title" style="font-size: 0.9rem;">Belum ada fail</div>
-            <div class="desc" style="font-size: 0.78rem;">Upload fail pertama anda</div>
-          </div>
-        `;
-        return;
+      // Untuk gambar, tunjuk thumbnail (Cloudinary auto-generate)
+      let iconContent = icon;
+      if (isImage && f.resourceType === 'image') {
+        const thumbUrl = f.url.replace('/upload/', '/upload/w_80,h_80,c_fill/');
+        iconContent = `<img src="${thumbUrl}" alt="" loading="lazy" />`;
       }
 
-      fileList.innerHTML = files.map(f => {
-        const sizeMB = (f.size / 1024 / 1024).toFixed(2);
-        const date = new Date(f.dateCreated).toLocaleDateString('ms-MY', {
-          day: '2-digit', month: 'short', year: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        });
-        const ext = (f.fileName.split('.').pop() || '').toUpperCase();
+      // Download URL untuk Cloudinary
+      const downloadUrl = f.url.replace('/upload/', '/upload/fl_attachment/');
 
-        let icon = '📄';
-        if (['PDF'].includes(ext)) icon = '📕';
-        else if (['DOC', 'DOCX'].includes(ext)) icon = '📘';
-        else if (['PPT', 'PPTX'].includes(ext)) icon = '📙';
-        else if (['XLS', 'XLSX'].includes(ext)) icon = '📗';
-        else if (['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP', 'SVG'].includes(ext)) icon = '🖼️';
-        else if (['ZIP', 'RAR', '7Z'].includes(ext)) icon = '📦';
-        else if (['MP4', 'MOV', 'AVI', 'MKV'].includes(ext)) icon = '🎬';
-        else if (['MP3', 'WAV', 'M4A'].includes(ext)) icon = '🎵';
-
-        return `
-          <div class="file-item">
-            <div class="file-icon">${icon}</div>
-            <div class="file-info">
-              <div class="file-name">${escapeHtml(f.fileName)}</div>
-              <div class="file-meta">${sizeMB} MB · ${date}</div>
-            </div>
-            <div class="file-actions">
-              <a class="file-btn" href="${f.previewUrl}" target="_blank" rel="noopener">👁️ View</a>
-              <a class="file-btn download" href="${f.downloadUrl}" target="_blank" rel="noopener">⬇️</a>
-            </div>
+      return `
+        <div class="file-item">
+          <div class="file-icon">${iconContent}</div>
+          <div class="file-info">
+            <div class="file-name">${escapeHtml(f.name)}</div>
+            <div class="file-meta">${sizeMB} MB · ${date} · ${escapeHtml(f.uploadedBy || '')}</div>
           </div>
-        `;
-      }).join('');
-
-    } catch (err) {
-      console.error('Load file list error:', err);
-      fileList.innerHTML = `
-        <div class="empty-state" style="padding: 30px 20px;">
-          <div class="emoji" style="font-size: 1.8rem;">⚠️</div>
-          <div class="title" style="font-size: 0.9rem;">Gagal load fail</div>
-          <div class="desc" style="font-size: 0.78rem;">${escapeHtml(err.message)}</div>
+          <div class="file-actions">
+            <a class="file-btn" href="${f.url}" target="_blank" rel="noopener">👁️ View</a>
+            <a class="file-btn download" href="${downloadUrl}" target="_blank" rel="noopener">⬇️</a>
+            <button class="file-btn delete" data-delete-idx="${idx}" title="Padam dari senarai">🗑️</button>
+          </div>
         </div>
       `;
-    }
+    }).join('');
+
+    // Attach delete handlers
+    fileList.querySelectorAll('[data-delete-idx]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = Number(btn.dataset.deleteIdx);
+        if (!confirm('Padam fail ini dari senarai? (Fail kekal dalam Cloudinary)')) return;
+        const files = getUploadedFiles();
+        files.splice(idx, 1);
+        saveUploadedFiles(files);
+        renderFileList();
+        showToast('🗑️ Fail dipadam dari senarai', 'success');
+      });
+    });
   }
 
-  // ===== UPLOAD EVENTS =====
-  ['dragenter', 'dragover'].forEach(evt => {
-    uploadBox.addEventListener(evt, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadBox.classList.add('dragover');
-    });
-  });
-  ['dragleave', 'drop'].forEach(evt => {
-    uploadBox.addEventListener(evt, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadBox.classList.remove('dragover');
-    });
-  });
+  // ===== UPLOAD BOX CLICK =====
+  uploadBox.addEventListener('click', () => {
+    if (!currentStudent) {
+      showToast('❌ Sila pilih pelajar dulu', 'error');
+      return;
+    }
 
-  uploadBox.addEventListener('drop', (e) => {
-    const files = e.dataTransfer.files;
-    if (files.length > 0) handleUpload(files[0]);
-  });
+    if (!cloudinaryWidget) {
+      cloudinaryWidget = initCloudinaryWidget();
+    }
 
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) handleUpload(e.target.files[0]);
+    if (cloudinaryWidget) {
+      cloudinaryWidget.open();
+    } else {
+      showToast('❌ Widget Cloudinary gagal load. Refresh page.', 'error');
+    }
   });
 
   refreshFileBtn.addEventListener('click', () => {
-    loadFileList();
+    renderFileList();
     showToast('🔄 Senarai fail dikemaskini', 'success');
   });
 
@@ -2247,9 +2291,12 @@
       mainContent.style.display = 'block';
 
       renderProfile();
+      renderFileList();
 
-      // Load file list
-      loadFileList();
+      // Init Cloudinary widget (tunggu script load siap)
+      setTimeout(() => {
+        cloudinaryWidget = initCloudinaryWidget();
+      }, 500);
 
     } catch (err) {
       console.error(err);
