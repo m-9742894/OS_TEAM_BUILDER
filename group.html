@@ -479,8 +479,8 @@
 
   /* Notis kotak */
   .notice-box {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.1));
-    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(236, 72, 153, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 14px;
     padding: 16px 18px;
     position: relative;
@@ -491,7 +491,7 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--warning), var(--danger));
+    background: linear-gradient(90deg, var(--primary), var(--accent));
   }
   .notice-box .notice-title {
     display: flex;
@@ -499,45 +499,16 @@
     gap: 8px;
     font-size: 0.9rem;
     font-weight: 800;
-    color: #fcd34d;
+    color: #a5b4fc;
     margin-bottom: 10px;
   }
   .notice-box .notice-title .icon {
     font-size: 1.2rem;
   }
-  .notice-box .notice-steps {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .notice-box .notice-steps li {
-    display: flex;
-    gap: 10px;
+  .notice-box .notice-text {
     font-size: 0.82rem;
-    color: #fde68a;
-    line-height: 1.5;
-  }
-  .notice-box .notice-steps li .num {
-    flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgba(245, 158, 11, 0.3);
-    border: 1px solid rgba(245, 158, 11, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: #fcd34d;
-  }
-  .notice-box .notice-highlight {
-    background: rgba(245, 158, 11, 0.25);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 800;
-    color: #fef3c7;
+    color: #c7d2fe;
+    line-height: 1.6;
   }
 
   .upload-label {
@@ -618,23 +589,6 @@
     background: rgba(255,255,255,0.12);
   }
 
-  .upload-hint {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-    padding: 10px 12px;
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 10px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-  }
-  .upload-hint .hint-icon {
-    flex-shrink: 0;
-    font-size: 0.9rem;
-  }
-
   .upload-status {
     padding: 12px 14px;
     border-radius: 12px;
@@ -655,6 +609,11 @@
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #fca5a5;
   }
+  .upload-status.loading {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+  }
 
   .file-list {
     display: flex;
@@ -670,6 +629,11 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     transition: all 0.2s ease;
+    position: relative;
+  }
+  .file-item.mine {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(99, 102, 241, 0.05));
   }
   .file-item:hover {
     background: var(--card-hover);
@@ -679,13 +643,13 @@
   .file-item .file-icon {
     width: 38px; height: 38px;
     border-radius: 10px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, #4285f4, #34a853);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
     overflow: hidden;
   }
   .file-item .file-info { flex: 1; min-width: 0; }
@@ -696,14 +660,27 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .file-item .file-link {
-    font-size: 0.7rem;
+  .file-item .file-meta {
+    font-size: 0.68rem;
     color: var(--text-muted);
     font-weight: 600;
     margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .file-item .file-meta .uploader-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    font-size: 0.62rem;
+    font-weight: 800;
+  }
+  .file-item .file-meta .uploader-badge.mine {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
   }
   .file-item .file-actions {
     display: flex;
@@ -713,9 +690,9 @@
   .file-item .file-btn {
     padding: 6px 12px;
     border-radius: 8px;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    color: #a5b4fc;
+    background: rgba(66, 133, 244, 0.15);
+    border: 1px solid rgba(66, 133, 244, 0.4);
+    color: #93c5fd;
     font-size: 0.7rem;
     font-weight: 700;
     cursor: pointer;
@@ -726,7 +703,7 @@
     gap: 4px;
   }
   .file-item .file-btn:hover {
-    background: rgba(99, 102, 241, 0.3);
+    background: rgba(66, 133, 244, 0.35);
     color: #fff;
     transform: translateY(-1px);
   }
@@ -1179,7 +1156,6 @@
 
     .upload-box { padding: 16px; }
     .notice-box { padding: 14px; }
-    .notice-box .notice-steps li { font-size: 0.76rem; }
     .upload-actions { grid-template-columns: 1fr; }
   }
   @media (max-width: 380px) {
@@ -1252,45 +1228,27 @@
         <div class="section-header">
           <h2>
             <span>📁</span>
-            Kongsi Fail Kumpulan (Google Drive)
+            Kongsi Link Fail Kumpulan
           </h2>
         </div>
 
         <div class="upload-box">
-          <!-- NOTIS PENTING -->
+          <!-- NOTIS -->
           <div class="notice-box">
             <div class="notice-title">
-              <span class="icon">⚠️</span>
-              <span>PENTING — Baca Dulu Sebelum Kongsi Link</span>
+              <span class="icon">💡</span>
+              <span>Cara Kongsi Link</span>
             </div>
-            <ul class="notice-steps">
-              <li>
-                <span class="num">1</span>
-                <span>Upload fail ke <strong>Google Drive</strong> anda sendiri.</span>
-              </li>
-              <li>
-                <span class="num">2</span>
-                <span>Right-click fail → <strong>Share</strong> → Change to <span class="notice-highlight">"Anyone with the link"</span></span>
-              </li>
-              <li>
-                <span class="num">3</span>
-                <span>Set permission: <span class="notice-highlight">Viewer</span> (kalau orang lain nak view/download).</span>
-              </li>
-              <li>
-                <span class="num">4</span>
-                <span>Copy link → paste dalam kotak bawah → tekan <strong>Kongsi Link</strong>.</span>
-              </li>
-              <li>
-                <span class="num">5</span>
-                <span>⚠️ Kalau tak set "Anyone with the link" → orang lain <strong>TAK BOLEH</strong> buka fail anda.</span>
-              </li>
-            </ul>
+            <div class="notice-text">
+              Paste <strong>apa-apa link</strong> yang boleh diakses oleh orang lain — Google Drive, Dropbox, OneDrive, GitHub, YouTube, website, dll.
+              Pastikan link tu <strong>public</strong> (boleh diakses sesiapa) supaya ahli kumpulan lain boleh buka.
+            </div>
           </div>
 
           <!-- FORM INPUT -->
           <div class="upload-input-wrap">
             <label class="upload-label">
-              <span>📎 Nama Fail</span>
+              <span>📎 Nama Fail / Link</span>
               <input
                 type="text"
                 id="fileNameInput"
@@ -1301,12 +1259,12 @@
             </label>
 
             <label class="upload-label">
-              <span>🔗 Link Google Drive</span>
+              <span>🔗 Link</span>
               <input
                 type="text"
                 id="fileLinkInput"
                 class="upload-input"
-                placeholder="https://drive.google.com/file/d/xxxxxxx/view"
+                placeholder="https://..."
               />
             </label>
           </div>
@@ -1320,11 +1278,6 @@
             </button>
           </div>
 
-          <div class="upload-hint">
-            <span class="hint-icon">💡</span>
-            <span>Link yang sah: bermula dengan <strong>https://drive.google.com/...</strong> — Support file, folder, atau Google Docs/Sheets/Slides.</span>
-          </div>
-
           <div class="upload-status" id="uploadStatus"></div>
         </div>
       </div>
@@ -1334,16 +1287,15 @@
         <div class="section-header">
           <h2>
             <span>📂</span>
-            Fail Yang Dah Dikongsi
+            Link Yang Dikongsi
             <span class="badge" id="fileListBadge">0</span>
           </h2>
-          <button class="refresh-btn" id="refreshFileBtn">🔄 Refresh</button>
         </div>
         <div class="file-list" id="fileList">
           <div class="empty-state" style="padding: 30px 20px;">
             <div class="emoji" style="font-size: 1.8rem;">📭</div>
             <div class="title" style="font-size: 0.9rem;">Belum ada link dikongsi</div>
-            <div class="desc" style="font-size: 0.78rem;">Kongsi link Google Drive pertama anda</div>
+            <div class="desc" style="font-size: 0.78rem;">Kongsi link pertama anda</div>
           </div>
         </div>
       </div>
@@ -1456,6 +1408,7 @@
     onSnapshot,
     query,
     orderBy,
+    where,
     serverTimestamp,
     runTransaction
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -1558,15 +1511,16 @@
   const uploadStatus = document.getElementById('uploadStatus');
   const fileList = document.getElementById('fileList');
   const fileListBadge = document.getElementById('fileListBadge');
-  const refreshFileBtn = document.getElementById('refreshFileBtn');
 
   const toastEl = document.getElementById('toast');
 
   // ===== STATE =====
   let currentStudent = null;
   let groups = [];
+  let allUploads = [];       // semua link dari Firestore
   let selectedSize = 3;
   let unsubGroups = null;
+  let unsubUploads = null;
 
   // ===== HELPERS =====
   function initials(name) {
@@ -1602,37 +1556,12 @@
       .replace(/'/g, '&#39;');
   }
 
-  // ===== GOOGLE DRIVE LINK VALIDATOR =====
-  function isValidDriveLink(url) {
+  // ===== LINK VALIDATOR — terima apa-apa link http/https =====
+  function isValidLink(url) {
     if (!url || typeof url !== 'string') return false;
     const trimmed = url.trim();
-    // Mesti start dengan http
-    if (!/^https?:\/\//i.test(trimmed)) return false;
-    // Mesti dari google.com (drive / docs / sheets / slides)
-    if (!/^https?:\/\/(drive|docs)\.google\.com\//i.test(trimmed)) return false;
-    return true;
-  }
-
-  // ===== EXTRACT FILE ID DARI LINK (untuk papar preview) =====
-  function extractDriveId(url) {
-    if (!url) return null;
-    // Format: /file/d/FILE_ID/view
-    let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (m) return m[1];
-    // Format: ?id=FILE_ID
-    m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (m) return m[1];
-    // Format: /d/FILE_ID/
-    m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (m) return m[1];
-    return null;
-  }
-
-  // Dapatkan preview URL (untuk buka dalam tab baru)
-  function getPreviewUrl(url) {
-    const id = extractDriveId(url);
-    if (id) return `https://drive.google.com/file/d/${id}/view`;
-    return url;
+    // Terima apa-apa link yang start dengan http:// atau https://
+    return /^https?:\/\/.+/i.test(trimmed);
   }
 
   // ===== LOAD CURRENT STUDENT =====
@@ -1694,7 +1623,7 @@
     }
   }
 
-  // ===== REAL-TIME LISTENER =====
+  // ===== REAL-TIME LISTENER: GROUPS =====
   function listenGroups() {
     const q = query(collection(db, "groups"), orderBy("createdAt", "asc"));
     unsubGroups = onSnapshot(q, (snap) => {
@@ -1706,6 +1635,28 @@
     }, (err) => {
       console.error("Firestore groups error:", err);
       showToast('⚠️ Gagal sambung Firestore', 'error');
+    });
+  }
+
+  // ===== REAL-TIME LISTENER: UPLOADS (LINK) =====
+  function listenUploads() {
+    unsubUploads = onSnapshot(collection(db, "uploads"), (snap) => {
+      allUploads = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+
+      // Sort — newest first
+      allUploads.sort((a, b) => {
+        const da = a.uploadedAt || '';
+        const db = b.uploadedAt || '';
+        return String(db).localeCompare(String(da));
+      });
+
+      console.log(`🔗 Uploads loaded: ${allUploads.length}`);
+      renderFileList();
+    }, (err) => {
+      console.error("Firestore uploads error:", err);
     });
   }
 
@@ -1765,12 +1716,19 @@
     const members = myGroup.members || [];
     const isCreator = myGroup.creator === currentStudent.matrix;
 
+    // Kira berapa ahli dah kongsi link
+    const uploaders = new Set();
+    allUploads.forEach(u => {
+      if (u.groupId === myGroup.id) uploaders.add(u.uploadedByMatrix);
+    });
+
     myGroupBox.innerHTML = `
       <div class="box-title">${isCreator ? '👑 Anda Pencipta Group' : '✅ Anda Ahli Group'}</div>
       <div class="box-name">${escapeHtml(myGroup.name)}</div>
       <div class="box-sub">
         Dicipta oleh <strong>${escapeHtml(creator ? creator.name : (myGroup.creatorName || 'Unknown'))}</strong>
         · ${members.length}/${myGroup.size} ahli
+        · ${uploaders.size}/${members.length} dah kongsi link
       </div>
     `;
   }
@@ -2135,6 +2093,9 @@
       const isYou = matrix === currentStudent.matrix;
       const canRemove = isCreator && !isC;
 
+      // Check kalau ahli ni dah kongsi link
+      const hasShared = allUploads.some(u => u.groupId === g.id && u.uploadedByMatrix === matrix);
+
       return `
         <div class="member-item ${isC ? 'creator' : ''}">
           <div class="m-num">${i + 1}</div>
@@ -2142,6 +2103,7 @@
             <div class="m-matrix">${escapeHtml(s.matrix)}</div>
             <div class="m-name">${escapeHtml(s.name)}</div>
           </div>
+          ${hasShared ? '<span class="you-badge" style="background: rgba(16,185,129,0.25); color:#6ee7b7; border:1px solid rgba(16,185,129,0.4);">📎 DAH KONGSI</span>' : ''}
           ${isC ? '<span class="creator-badge">👑 CREATOR</span>' : ''}
           ${isYou && !isC ? '<span class="you-badge">YOU</span>' : ''}
           ${canRemove ? `<button class="remove-btn" data-remove="${matrix}" title="Keluarkan ahli">✕ Remove</button>` : ''}
@@ -2235,7 +2197,7 @@
   }
 
   // ==================================================
-  // ===== KONGSI LINK GOOGLE DRIVE =====
+  // ===== KONGSI LINK (FIREBASE REALTIME) =====
   // ==================================================
 
   function showUploadStatus(msg, type) {
@@ -2248,28 +2210,7 @@
     }
   }
 
-  const FILE_STORAGE_KEY = 'osteam_shared_links';
-
-  function getSharedLinks() {
-    try {
-      const raw = localStorage.getItem(FILE_STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function saveSharedLinks(files) {
-    localStorage.setItem(FILE_STORAGE_KEY, JSON.stringify(files));
-  }
-
-  function addSharedLink(fileMeta) {
-    const files = getSharedLinks();
-    files.unshift(fileMeta);
-    saveSharedLinks(files);
-  }
-
-  // ===== SIMPAN METADATA LINK KE FIRESTORE (UNTUK DASHBOARD) =====
+  // ===== SIMPAN LINK KE FIRESTORE =====
   async function saveLinkToFirestore(fileMeta) {
     try {
       const docRef = doc(collection(db, "uploads"));
@@ -2277,10 +2218,22 @@
         ...fileMeta,
         createdAt: serverTimestamp()
       });
-      console.log("✅ Metadata link disimpan ke Firestore:", fileMeta.name);
+      console.log("✅ Link disimpan ke Firestore:", fileMeta.name);
       return true;
     } catch (err) {
-      console.error("❌ Gagal simpan metadata link:", err);
+      console.error("❌ Gagal simpan link:", err);
+      return false;
+    }
+  }
+
+  // ===== DELETE LINK DARI FIRESTORE =====
+  async function deleteLinkFromFirestore(docId) {
+    try {
+      await deleteDoc(doc(db, "uploads", docId));
+      console.log("✅ Link dipadam:", docId);
+      return true;
+    } catch (err) {
+      console.error("❌ Gagal padam link:", err);
       return false;
     }
   }
@@ -2295,7 +2248,6 @@
     const name = fileNameInput.value.trim();
     const link = fileLinkInput.value.trim();
 
-    // Validate
     if (!name) {
       showUploadStatus('❌ Sila masukkan nama fail', 'error');
       fileNameInput.focus();
@@ -2303,13 +2255,13 @@
     }
 
     if (!link) {
-      showUploadStatus('❌ Sila paste link Google Drive', 'error');
+      showUploadStatus('❌ Sila paste link', 'error');
       fileLinkInput.focus();
       return;
     }
 
-    if (!isValidDriveLink(link)) {
-      showUploadStatus('❌ Link tak sah. Pastikan link dari Google Drive/Docs dan bermula dengan https://', 'error');
+    if (!isValidLink(link)) {
+      showUploadStatus('❌ Link tak sah. Pastikan bermula dengan https:// atau http://', 'error');
       fileLinkInput.focus();
       return;
     }
@@ -2317,12 +2269,11 @@
     const myGroup = getGroupOfStudent(currentStudent.matrix);
 
     const fileMeta = {
-      publicId: extractDriveId(link) || '',
       url: link,
       name: name,
       size: 0,
-      format: 'drive-link',
-      resourceType: 'drive',
+      format: 'link',
+      resourceType: 'link',
       uploadedAt: new Date().toISOString(),
       uploadedBy: currentStudent ? currentStudent.name : 'Unknown',
       uploadedByMatrix: currentStudent ? currentStudent.matrix : '',
@@ -2337,15 +2288,13 @@
       const saved = await saveLinkToFirestore(fileMeta);
 
       if (saved) {
-        addSharedLink(fileMeta);
         showUploadStatus(`✅ Berjaya kongsi: ${name}`, 'success');
         showToast(`✅ Link "${name}" berjaya dikongsi`, 'success');
-        renderFileList();
-        // Clear form
         fileNameInput.value = '';
         fileLinkInput.value = '';
+        // Tak perlu renderFileList() — onSnapshot auto update
       } else {
-        showUploadStatus('❌ Gagal simpan ke database. Cuba lagi.', 'error');
+        showUploadStatus('❌ Gagal simpan. Cuba lagi.', 'error');
       }
     } catch (err) {
       console.error(err);
@@ -2356,54 +2305,74 @@
     }
   }
 
-  // ===== RENDER FILE LIST =====
+  // ===== RENDER FILE LIST (SEMUA FAIL DALAM GROUP) =====
   function renderFileList() {
-    const files = getSharedLinks();
+    if (!currentStudent) return;
+
+    const myGroup = getGroupOfStudent(currentStudent.matrix);
+
+    // Kalau tak join group → tunjuk semua fail dia je
+    // Kalau dah join → tunjuk semua fail group dia
+    let files;
+    if (myGroup) {
+      files = allUploads.filter(f => f.groupId === myGroup.id);
+    } else {
+      files = allUploads.filter(f => f.uploadedByMatrix === currentStudent.matrix);
+    }
+
     fileListBadge.textContent = files.length;
 
     if (files.length === 0) {
       fileList.innerHTML = `
         <div class="empty-state" style="padding: 30px 20px;">
           <div class="emoji" style="font-size: 1.8rem;">📭</div>
-          <div class="title" style="font-size: 0.9rem;">Belum ada link dikongsi</div>
-          <div class="desc" style="font-size: 0.78rem;">Kongsi link Google Drive pertama anda</div>
+          <div class="title" style="font-size: 0.9rem;">${myGroup ? 'Kumpulan anda belum kongsi link' : 'Belum ada link dikongsi'}</div>
+          <div class="desc" style="font-size: 0.78rem;">${myGroup ? 'Jadi yang pertama kongsi link dalam kumpulan anda!' : 'Kongsi link pertama anda'}</div>
         </div>
       `;
       return;
     }
 
-    fileList.innerHTML = files.map((f, idx) => {
+    fileList.innerHTML = files.map((f) => {
       const date = new Date(f.uploadedAt).toLocaleDateString('ms-MY', {
         day: '2-digit', month: 'short', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
       });
 
-      const previewUrl = getPreviewUrl(f.url);
+      const isMine = f.uploadedByMatrix === currentStudent.matrix;
+      const canDelete = isMine; // boleh delete link sendiri sahaja
 
       return `
-        <div class="file-item">
-          <div class="file-icon">📁</div>
+        <div class="file-item ${isMine ? 'mine' : ''}">
+          <div class="file-icon">🔗</div>
           <div class="file-info">
             <div class="file-name">${escapeHtml(f.name)}</div>
-            <div class="file-link">${escapeHtml(f.url)}</div>
+            <div class="file-meta">
+              <span class="uploader-badge ${isMine ? 'mine' : ''}">${isMine ? '👤 Anda' : escapeHtml(f.uploadedBy || 'Unknown')}</span>
+              <span>${date}</span>
+            </div>
           </div>
           <div class="file-actions">
-            <a class="file-btn" href="${escapeHtml(previewUrl)}" target="_blank" rel="noopener">👁️ Buka</a>
-            <button class="file-btn delete" data-delete-idx="${idx}" title="Padam dari senarai">🗑️</button>
+            <a class="file-btn" href="${escapeHtml(f.url)}" target="_blank" rel="noopener">👁️ Buka</a>
+            ${canDelete ? `<button class="file-btn delete" data-delete-id="${f.id}" title="Padam link">🗑️</button>` : ''}
           </div>
         </div>
       `;
     }).join('');
 
-    fileList.querySelectorAll('[data-delete-idx]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const idx = Number(btn.dataset.deleteIdx);
-        if (!confirm('Padam link ini dari senarai?')) return;
-        const files = getSharedLinks();
-        files.splice(idx, 1);
-        saveSharedLinks(files);
-        renderFileList();
-        showToast('🗑️ Link dipadam dari senarai', 'success');
+    // Attach delete handler
+    fileList.querySelectorAll('[data-delete-id]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const docId = btn.dataset.deleteId;
+        if (!confirm('Padam link ini? Tindakan ini tak boleh undo.')) return;
+
+        const success = await deleteLinkFromFirestore(docId);
+        if (success) {
+          showToast('🗑️ Link berjaya dipadam', 'success');
+          // onSnapshot auto update
+        } else {
+          showToast('❌ Gagal padam link', 'error');
+        }
       });
     });
   }
@@ -2422,11 +2391,6 @@
   // Enter key pada input link → share
   fileLinkInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') shareLink();
-  });
-
-  refreshFileBtn.addEventListener('click', () => {
-    renderFileList();
-    showToast('🔄 Senarai link dikemaskini', 'success');
   });
 
   // ===== EVENTS =====
@@ -2477,6 +2441,7 @@
     }
 
     if (unsubGroups) unsubGroups();
+    if (unsubUploads) unsubUploads();
     localStorage.removeItem('selectedStudent');
     window.location.href = 'index.html';
   });
@@ -2488,6 +2453,7 @@
     try {
       await seedStudentsIfEmpty();
       listenGroups();
+      listenUploads();
 
       pageLoading.style.display = 'none';
       mainContent.style.display = 'block';
